@@ -16,6 +16,8 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle backgroundRect;
         Rectangle floorRect;
 
+        SpriteFont overseerFont;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -44,6 +46,8 @@ namespace MonoGameFinal___Fallout_Shootout
             backgroundTexture = Content.Load<Texture2D>("wasteland");
             floorTexture = Content.Load<Texture2D>("final-floor");
 
+            overseerFont = Content.Load<SpriteFont>("overseerFont");
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -68,6 +72,8 @@ namespace MonoGameFinal___Fallout_Shootout
             _spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
             _spriteBatch.Draw(floorTexture, new Rectangle(-200, 250, 960, 612), Color.White);
             _spriteBatch.Draw(floorTexture, new Rectangle(200, 250, 960, 612), Color.White);
+
+            _spriteBatch.DrawString(overseerFont, "Fallout Fightout", new Vector2(10, 10), Color.Black);
 
             _spriteBatch.End();
             base.Draw(gameTime);
