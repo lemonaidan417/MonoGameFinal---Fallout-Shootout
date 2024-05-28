@@ -11,10 +11,12 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Texture2D backgroundTexture;
         Texture2D floorTexture;
+        Texture2D paMinigunTexture;
 
         Rectangle window;
         Rectangle backgroundRect;
         Rectangle floorRect;
+        Rectangle paMinigunRect;
 
         SpriteFont overseerFont;
 
@@ -35,6 +37,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
             backgroundRect = new Rectangle(0, 0, 960, 512);
             floorRect = new Rectangle(0, 200, 960, 512);
+            paMinigunRect = new Rectangle(0, 200, 200, 200);
 
             base.Initialize();
         }
@@ -45,6 +48,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
             backgroundTexture = Content.Load<Texture2D>("wasteland");
             floorTexture = Content.Load<Texture2D>("final-floor");
+            paMinigunTexture = Content.Load<Texture2D>("final-pa-minigun");
 
             overseerFont = Content.Load<SpriteFont>("overseerFont");
 
@@ -72,6 +76,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
             _spriteBatch.Draw(floorTexture, new Rectangle(-200, 250, 960, 612), Color.White);
             _spriteBatch.Draw(floorTexture, new Rectangle(200, 250, 960, 612), Color.White);
+            _spriteBatch.Draw(paMinigunTexture, paMinigunRect, Color.White);
 
             _spriteBatch.DrawString(overseerFont, "Fallout Fightout", new Vector2(10, 10), Color.Black);
 
