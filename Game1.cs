@@ -12,6 +12,7 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D backgroundTexture;
         Texture2D floorTexture;
         Texture2D paMinigunTexture;
+        Texture2D paMinigunLeftTexture;
 
         Rectangle window;
         Rectangle backgroundRect;
@@ -49,7 +50,7 @@ namespace MonoGameFinal___Fallout_Shootout
             backgroundTexture = Content.Load<Texture2D>("wasteland");
             floorTexture = Content.Load<Texture2D>("final-floor");
             paMinigunTexture = Content.Load<Texture2D>("final-pa-minigun");
-
+            paMinigunLeftTexture = Content.Load<Texture2D>("final-pa-minigun-left");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
 
 
