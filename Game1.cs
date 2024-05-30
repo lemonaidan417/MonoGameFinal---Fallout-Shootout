@@ -9,15 +9,19 @@ namespace MonoGameFinal___Fallout_Shootout
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Texture2D backgroundTexture;
         Texture2D floorTexture;
         Texture2D paMinigunTexture;
         Texture2D paMinigunLeftTexture;
+        Texture2D bulletTexture;
+
+        KeyboardState keyboardState;
 
         Rectangle window;
-        Rectangle backgroundRect;
         Rectangle floorRect;
         Rectangle paMinigunRect;
+        Rectangle bulletRect;
+
+        Vector2 paMinigunSpeed;
 
         SpriteFont overseerFont;
 
@@ -31,14 +35,14 @@ namespace MonoGameFinal___Fallout_Shootout
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            window = new Rectangle(0, 0, 960, 512);
+            window = new Rectangle(0, 0, 750, 750);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-            backgroundRect = new Rectangle(0, 0, 960, 512);
-            floorRect = new Rectangle(0, 200, 960, 512);
+            floorRect = new Rectangle(0, 0, 750, 750);
             paMinigunRect = new Rectangle(0, 200, 200, 200);
+            bulletRect = new Rectangle(500, 500, 10, 10);
 
             base.Initialize();
         }
@@ -47,10 +51,10 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            backgroundTexture = Content.Load<Texture2D>("wasteland");
-            floorTexture = Content.Load<Texture2D>("final-floor");
+            floorTexture = Content.Load<Texture2D>("desert-background");
             paMinigunTexture = Content.Load<Texture2D>("final-pa-minigun");
             paMinigunLeftTexture = Content.Load<Texture2D>("final-pa-minigun-left");
+            bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
 
 
@@ -64,6 +68,13 @@ namespace MonoGameFinal___Fallout_Shootout
 
             // TODO: Add your update logic here
 
+            keyboardState = Keyboard.GetState();
+            paMinigunSpeed = new Vector2();
+            if (keyboardState.IsKeyDown(Keys.W))
+            {
+                paMinigunSpeed.Y -= 2;
+            }
+
             base.Update(gameTime);
         }
 
@@ -74,12 +85,11 @@ namespace MonoGameFinal___Fallout_Shootout
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
-            _spriteBatch.Draw(floorTexture, new Rectangle(-200, 250, 960, 612), Color.White);
-            _spriteBatch.Draw(floorTexture, new Rectangle(200, 250, 960, 612), Color.White);
-            _spriteBatch.Draw(paMinigunTexture, paMinigunRect, Color.White);
+            _spriteBatch.Draw(floorTexture, floorRect, Color.White);
+            _spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
+            _spriteBatch.Draw(paMinigunTexture, new Rectangle(325, 325, 100, 100), Color.White);
 
-            _spriteBatch.DrawString(overseerFont, "Fallout Fightout", new Vector2(10, 10), Color.Black);
+            //_spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(10, 10), Color.Black);
 
             _spriteBatch.End();
             base.Draw(gameTime);
