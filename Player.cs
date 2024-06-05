@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
+using System.Threading;
 namespace MonoGameFinal___Fallout_Shootout
 {
     class Player
@@ -11,12 +14,14 @@ namespace MonoGameFinal___Fallout_Shootout
         private Texture2D _texture;
         private Rectangle _location;
         private Vector2 _speed;
+        private float _angle;
 
         public Player(Texture2D texture, int x, int y)
         {
             _texture = texture;
             _location = new Rectangle(x, y, 100, 100);
             _speed = new Vector2();
+            _angle = 0f;
         }
 
         public float HSpeed
@@ -34,7 +39,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _location, Color.White);
+            spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
         }
 
         private void Move()
@@ -49,9 +54,16 @@ namespace MonoGameFinal___Fallout_Shootout
             _location.Y -= (int)_speed.Y;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             Move();
+            if (_speed != Vector2.Zero)
+            {
+                _speed.Normalize();
+            }
+            _angle = (float)Math.Atan2(_speed.Y, _speed.X);
+            
+            
         }
 
         public bool Collide(Rectangle item)
@@ -62,12 +74,6 @@ namespace MonoGameFinal___Fallout_Shootout
         public Boolean Contains(Rectangle item)
         {
             return _location.Contains(item);
-        }
-
-        public void Grow()
-        {
-            _location.Width += 1;
-            _location.Height += 1;
         }
     }
 }

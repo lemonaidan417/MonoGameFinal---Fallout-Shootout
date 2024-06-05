@@ -11,7 +11,6 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Player player;
 
-        Vector2 paMinigunSpeed;
         Texture2D paMinigunTexture;
         Texture2D paMinigunLeftTexture;
         Rectangle paMinigunRect;
@@ -19,11 +18,10 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle bulletRect;
         Texture2D bulletTexture;
 
-        KeyboardState keyboardState;
 
         Rectangle window;
         
-        float rotation;
+        float playerAngle;
         
         SpriteFont overseerFont;
 
@@ -31,6 +29,7 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle hitBoxRect;
 
         MouseState mouseState, prevMouseState;
+        KeyboardState keyboardState;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -89,7 +88,8 @@ namespace MonoGameFinal___Fallout_Shootout
             else if (keyboardState.IsKeyDown(Keys.S) || (keyboardState.IsKeyDown(Keys.Down)))
                 player.VSpeed = 3;
 
-            player.Update();
+
+            player.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -101,9 +101,9 @@ namespace MonoGameFinal___Fallout_Shootout
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
+            //_spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
+
             player.Draw(_spriteBatch);
-            //_spriteBatch.Draw(paMinigunTexture, new Rectangle(325, 325, 100, 100), Color.White);
 
             //_spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(10, 10), Color.Black);
 
