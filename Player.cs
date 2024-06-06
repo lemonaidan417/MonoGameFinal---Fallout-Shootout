@@ -39,7 +39,15 @@ namespace MonoGameFinal___Fallout_Shootout
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
+            if (_angle >= 2.35619 && _angle <= 5.75959)
+            {
+                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
+
+            }
+            else
+            {
+                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
+            }
         }
 
         private void Move()
@@ -57,13 +65,7 @@ namespace MonoGameFinal___Fallout_Shootout
         public void Update(GameTime gameTime)
         {
             Move();
-            if (_speed != Vector2.Zero)
-            {
-                _speed.Normalize();
-            }
             _angle = (float)Math.Atan2(_speed.Y, _speed.X);
-            
-            
         }
 
         public bool Collide(Rectangle item)

@@ -20,6 +20,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
 
         Rectangle window;
+        Texture2D backgroundTexture;
         
         float playerAngle;
         
@@ -61,6 +62,7 @@ namespace MonoGameFinal___Fallout_Shootout
             paMinigunLeftTexture = Content.Load<Texture2D>("final-pa-minigun-left");
             bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
+            backgroundTexture = Content.Load<Texture2D>("desert-background");
 
 
             // TODO: use this.Content to load your game content here
@@ -100,6 +102,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
+            _spriteBatch.Draw(backgroundTexture, window, Color.White);
 
             //_spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
 
