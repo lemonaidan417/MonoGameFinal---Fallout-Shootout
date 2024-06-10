@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
@@ -11,6 +12,8 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Player player;
 
+        Enemy enemy;
+
         Texture2D paMinigunTexture;
         Texture2D paMinigunLeftTexture;
         Rectangle paMinigunRect;
@@ -18,6 +21,8 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle bulletRect;
         Texture2D bulletTexture;
 
+        Rectangle eyeBotRect;
+        Texture2D eyeBotTexture;
 
         Rectangle window;
         Texture2D backgroundTexture;
@@ -52,6 +57,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
             base.Initialize();
             player = new Player(paMinigunTexture, 350, 350);
+            enemy = new Enemy(eyeBotTexture, 100, 100);
         }
 
         protected override void LoadContent()
@@ -63,6 +69,7 @@ namespace MonoGameFinal___Fallout_Shootout
             bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
             backgroundTexture = Content.Load<Texture2D>("desert-background");
+            eyeBotTexture = Content.Load<Texture2D>("eyebot-pixilart");
 
 
             // TODO: use this.Content to load your game content here
@@ -95,9 +102,12 @@ namespace MonoGameFinal___Fallout_Shootout
                 player.VSpeed *= 1.8f;
                 player.HSpeed *= 1.8f;
             }
-
+            playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
+            this.Window.Title = playerAngle.ToString();
             player.Update(gameTime);
 
+
+            enemy.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -112,6 +122,7 @@ namespace MonoGameFinal___Fallout_Shootout
             //_spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
 
             player.Draw(_spriteBatch);
+            enemy.Draw(_spriteBatch);
 
             //_spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(10, 10), Color.Black);
 
