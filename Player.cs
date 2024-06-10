@@ -39,7 +39,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (_angle >= 2.35619 && _angle <= 5.75959)
+            if (_angle >= MathHelper.ToRadians(60) && _angle <= MathHelper.ToRadians(315))
             {
                 spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
 

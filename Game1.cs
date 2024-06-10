@@ -81,15 +81,20 @@ namespace MonoGameFinal___Fallout_Shootout
             player.VSpeed = 0;
 
             if (keyboardState.IsKeyDown(Keys.D) || (keyboardState.IsKeyDown(Keys.Right)))
-                player.HSpeed = 3;
+                player.HSpeed = 2;
             else if (keyboardState.IsKeyDown(Keys.A) || (keyboardState.IsKeyDown(Keys.Left)))
-                player.HSpeed = -3;
+                player.HSpeed = -2;
 
             if (keyboardState.IsKeyDown(Keys.W) || (keyboardState.IsKeyDown(Keys.Up)))
-                player.VSpeed = -3;
+                player.VSpeed = -2;
             else if (keyboardState.IsKeyDown(Keys.S) || (keyboardState.IsKeyDown(Keys.Down)))
-                player.VSpeed = 3;
+                player.VSpeed = 2;
 
+            if (keyboardState.IsKeyDown(Keys.LeftShift) || (keyboardState.IsKeyDown(Keys.RightShift)))
+            {
+                player.VSpeed *= 1.8f;
+                player.HSpeed *= 1.8f;
+            }
 
             player.Update(gameTime);
 
