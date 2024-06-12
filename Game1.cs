@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
@@ -14,12 +15,15 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Enemy enemy;
 
+        List<Bullet> bullets;
+
         Texture2D paMinigunTexture;
         Texture2D paMinigunLeftTexture;
         Rectangle paMinigunRect;
 
         Rectangle bulletRect;
         Texture2D bulletTexture;
+        Vector2 bulletSpeed;
 
         Rectangle eyeBotRect;
         Texture2D eyeBotTexture;
@@ -52,8 +56,9 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.ApplyChanges();
 
             paMinigunRect = new Rectangle(0, 200, 200, 200);
-            bulletRect = new Rectangle(500, 500, 10, 10);
+            bulletRect = new Rectangle(100, 100, 5, 5);
 
+            bullets = new List<Bullet>();
 
             base.Initialize();
             player = new Player(paMinigunTexture, 350, 350);
@@ -83,6 +88,24 @@ namespace MonoGameFinal___Fallout_Shootout
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
 
+            Window.Title = bullets.Count + "";
+            prevMouseState = mouseState;
+            mouseState = Mouse.GetState();
+
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                bullets.Add(new Bullet(bulletTexture, paMinigunRect.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
+            }
+
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                bullets[i].Update();
+                if (!window.Intersects(bullets[i].Rect)) // removes bullets after they leave the window
+                {
+                    bullets.RemoveAt(i);
+                    i--;
+                }
+            }
 
             player.HSpeed = 0;
             player.VSpeed = 0;
@@ -106,8 +129,8 @@ namespace MonoGameFinal___Fallout_Shootout
             this.Window.Title = playerAngle.ToString();
             player.Update(gameTime);
 
-
             enemy.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -124,10 +147,53 @@ namespace MonoGameFinal___Fallout_Shootout
             player.Draw(_spriteBatch);
             enemy.Draw(_spriteBatch);
 
+            foreach (Bullet bullet in bullets)
+                bullet.Draw(_spriteBatch);
+
             //_spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(10, 10), Color.Black);
 
             _spriteBatch.End();
             base.Draw(gameTime);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // Thank you so much for your help Mr Aldworth!
         }
     }
 }

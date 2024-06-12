@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
+
 namespace MonoGameFinal___Fallout_Shootout
 {
     class Player
@@ -39,14 +41,10 @@ namespace MonoGameFinal___Fallout_Shootout
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            //if (_angle == -2.3561946 || _angle == 3.1415927 || _angle == 2.3561946)
-            //{
-            //    spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
-
-            //}
-            if ((_angle <= -2.4 && _angle > -1.5) || (_angle <= 3.15 && _angle >= 1.6))
+            if ((_angle >= -2.4 && _angle < -1.6) || (_angle <= 3.15 && _angle >= 1.6))
             {
                 spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
+
             }
             else
             {

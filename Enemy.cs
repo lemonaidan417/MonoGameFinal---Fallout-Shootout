@@ -21,7 +21,7 @@ namespace MonoGameFinal___Fallout_Shootout
         public Enemy(Texture2D texture, int x, int y)
         {
             _texture = texture;
-            _location = new Rectangle(x, y, 100, 100);
+            _location = new Rectangle(x, y, 200, 200);
             _speed = new Vector2();
         }
 
