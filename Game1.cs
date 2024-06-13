@@ -40,9 +40,10 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle hitBoxRect;
 
         MouseState mouseState, prevMouseState;
-        KeyboardState keyboardState;
+        KeyboardState keyboardState, ks1, ks2;
 
         float ammoCount;
+        float ammoDeplet;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -58,8 +59,8 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-            paMinigunRect = new Rectangle(0, 200, 200, 200);
-            bulletRect = new Rectangle(100, 100, 5, 5);
+            //paMinigunRect = new Rectangle(0, 200, 200, 200);
+            //bulletRect = new Rectangle(100, 100, 5, 5);
 
             bullets = new List<Bullet>();
             enemies = new List<Enemy>();
@@ -92,21 +93,27 @@ namespace MonoGameFinal___Fallout_Shootout
 
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
-
+            ks1 = Keyboard.GetState();
             
             prevMouseState = mouseState;
             mouseState = Mouse.GetState();
 
 
-            if (keyboardState.IsKeyDown(Keys.Space))
-            {
-                bullets.Add(new Bullet(bulletTexture, paMinigunRect.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
-            }
+            //if (ks1.IsKeyDown(Keys.Space) && ks2.IsKeyUp(Keys.Space))
+            //{
+            //    bullets.Add(new Bullet(bulletTexture, paMinigunRect.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
+            //}
+            //ks2 = ks1;
 
+            // ^ is for semi automatic weapons
+            if (ks1.IsKeyDown(Keys.Space))
+            {
+                bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 5));
+            }
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Update();
-                ammoCount *= bullets.Count / ammoCount;
+               
                 if (!window.Intersects(bullets[i].Rect)) // removes bullets after they leave the window
                 {
                     bullets.RemoveAt(i);
@@ -114,11 +121,11 @@ namespace MonoGameFinal___Fallout_Shootout
                 }
             }
 
-            enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
+            //enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
 
-            foreach (Enemy enemy in enemies)
-            {
-            }
+            //foreach (Enemy enemy in enemies)
+            //{
+            //}
 
             player.HSpeed = 0;
             player.VSpeed = 0;
@@ -141,7 +148,7 @@ namespace MonoGameFinal___Fallout_Shootout
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
             player.Update(gameTime);
 
-            Window.Title = ammoCount + "";
+            Window.Title = ammoDeplet + "";
 
             base.Update(gameTime);
         }

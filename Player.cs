@@ -14,9 +14,9 @@ namespace MonoGameFinal___Fallout_Shootout
     class Player
     {
         private Texture2D _texture;
-        private Rectangle _location;
+        public Rectangle _location;
         public Vector2 _speed;
-        private float _angle;
+        public float _angle;
 
         public Player(Texture2D texture, int x, int y)
         {

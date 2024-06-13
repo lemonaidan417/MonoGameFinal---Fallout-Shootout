@@ -9,18 +9,20 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
-    internal class Bullet
+    class Bullet
     {
         private Texture2D _texture;
         private Rectangle _rect;
         private Vector2 _location;
         private Vector2 _direction;
         private float _angle;
-        private Vector2 _speed;
+        private float _speed;
         private int _size;
+        private Random random;
 
         public Bullet(Texture2D texture, Vector2 location, Vector2 target, int size)
         {
@@ -30,7 +32,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _rect = new Rectangle(location.ToPoint(), new Point(_size, _size));
             _direction = target - location;
             _direction.Normalize();
-            _speed = new Vector2(10);
+            _speed = 10;
         }
 
         // Allows read access to the location Rectangle for collision detection
@@ -43,12 +45,12 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             _location += _direction * _speed;
             _rect.Location = _location.ToPoint();
-            _angle = (float)Math.Atan2(_speed.Y, _speed.X);
+            _angle = (float)Math.Atan2(_direction.Y, _direction.X);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Rectangle(_rect.Center, _rect.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
+            spriteBatch.Draw(_texture, new Rectangle(_rect.Center, _rect.Size), null, Color.White, (float)Math.Atan2(_direction.Y, _direction.X), new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
 
         }
 
