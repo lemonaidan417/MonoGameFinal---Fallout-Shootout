@@ -18,7 +18,8 @@ namespace MonoGameFinal___Fallout_Shootout
         private Rectangle _location;
         public Vector2 _speed;
 
-        public Enemy(Texture2D texture, int x, int y)
+
+        public Enemy(Texture2D texture, int x, int y, Vector2 newPos)
         {
             _texture = texture;
             _location = new Rectangle(x, y, 200, 200);

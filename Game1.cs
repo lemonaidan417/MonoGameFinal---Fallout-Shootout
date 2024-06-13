@@ -13,7 +13,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Player player;
 
-        Enemy enemy;
+        List<Enemy> enemies;
 
         List<Bullet> bullets;
 
@@ -27,6 +27,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Rectangle eyeBotRect;
         Texture2D eyeBotTexture;
+        Vector2 eyeBotSpeed;
 
         Rectangle window;
         Texture2D backgroundTexture;
@@ -40,6 +41,8 @@ namespace MonoGameFinal___Fallout_Shootout
 
         MouseState mouseState, prevMouseState;
         KeyboardState keyboardState;
+
+        float ammoCount;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -59,10 +62,12 @@ namespace MonoGameFinal___Fallout_Shootout
             bulletRect = new Rectangle(100, 100, 5, 5);
 
             bullets = new List<Bullet>();
+            enemies = new List<Enemy>();
+
+            ammoCount = 250;
 
             base.Initialize();
             player = new Player(paMinigunTexture, 350, 350);
-            enemy = new Enemy(eyeBotTexture, 100, 100);
         }
 
         protected override void LoadContent()
@@ -88,11 +93,12 @@ namespace MonoGameFinal___Fallout_Shootout
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
 
-            Window.Title = bullets.Count + "";
+            
             prevMouseState = mouseState;
             mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed)
+
+            if (keyboardState.IsKeyDown(Keys.Space))
             {
                 bullets.Add(new Bullet(bulletTexture, paMinigunRect.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
             }
@@ -100,11 +106,18 @@ namespace MonoGameFinal___Fallout_Shootout
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Update();
+                ammoCount *= bullets.Count / ammoCount;
                 if (!window.Intersects(bullets[i].Rect)) // removes bullets after they leave the window
                 {
                     bullets.RemoveAt(i);
                     i--;
                 }
+            }
+
+            enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
+
+            foreach (Enemy enemy in enemies)
+            {
             }
 
             player.HSpeed = 0;
@@ -126,10 +139,9 @@ namespace MonoGameFinal___Fallout_Shootout
                 player.HSpeed *= 1.8f;
             }
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
-            this.Window.Title = playerAngle.ToString();
             player.Update(gameTime);
 
-            enemy.Update(gameTime);
+            Window.Title = ammoCount + "";
 
             base.Update(gameTime);
         }
@@ -145,7 +157,8 @@ namespace MonoGameFinal___Fallout_Shootout
             //_spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
 
             player.Draw(_spriteBatch);
-            enemy.Draw(_spriteBatch);
+            foreach (Enemy enemy in enemies)
+                enemy.Draw(_spriteBatch);
 
             foreach (Bullet bullet in bullets)
                 bullet.Draw(_spriteBatch);
