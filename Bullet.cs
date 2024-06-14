@@ -32,7 +32,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _rect = new Rectangle(location.ToPoint(), new Point(_size, _size));
             _direction = target - location;
             _direction.Normalize();
-            _speed = 10;
+            _speed = 15;
         }
 
         // Allows read access to the location Rectangle for collision detection
@@ -45,7 +45,7 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             _location += _direction * _speed;
             _rect.Location = _location.ToPoint();
-            _angle = (float)Math.Atan2(_direction.Y, _direction.X);
+            _angle = (float)Math.Atan2(_direction.Y, _direction.X) + 10;
         }
 
         public void Draw(SpriteBatch spriteBatch)

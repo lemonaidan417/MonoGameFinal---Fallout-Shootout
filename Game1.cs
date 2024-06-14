@@ -18,7 +18,6 @@ namespace MonoGameFinal___Fallout_Shootout
         List<Bullet> bullets;
 
         Texture2D paMinigunTexture;
-        Texture2D paMinigunLeftTexture;
         Rectangle paMinigunRect;
 
         Rectangle bulletRect;
@@ -33,6 +32,7 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D backgroundTexture;
         
         float playerAngle;
+        float seconds, gunCoolDown;
         
         SpriteFont overseerFont;
 
@@ -59,6 +59,8 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
+            seconds = 0f;
+            gunCoolDown = 0.05f;
             //paMinigunRect = new Rectangle(0, 200, 200, 200);
             //bulletRect = new Rectangle(100, 100, 5, 5);
 
@@ -76,7 +78,6 @@ namespace MonoGameFinal___Fallout_Shootout
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             paMinigunTexture = Content.Load<Texture2D>("final-pa-minigun");
-            paMinigunLeftTexture = Content.Load<Texture2D>("final-pa-minigun-left");
             bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
             backgroundTexture = Content.Load<Texture2D>("desert-background");
@@ -90,7 +91,7 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
             ks1 = Keyboard.GetState();
@@ -106,9 +107,13 @@ namespace MonoGameFinal___Fallout_Shootout
             //ks2 = ks1;
 
             // ^ is for semi automatic weapons
-            if (ks1.IsKeyDown(Keys.Space))
+            if (keyboardState.IsKeyDown(Keys.Space))
             {
-                bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 5));
+                if (seconds >= gunCoolDown)
+                {
+                    bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
+                    seconds = 0;
+                }
             }
             for (int i = 0; i < bullets.Count; i++)
             {
@@ -148,7 +153,7 @@ namespace MonoGameFinal___Fallout_Shootout
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
             player.Update(gameTime);
 
-            Window.Title = ammoDeplet + "";
+            Window.Title = bullets.Count + "";
 
             base.Update(gameTime);
         }
@@ -170,7 +175,7 @@ namespace MonoGameFinal___Fallout_Shootout
             foreach (Bullet bullet in bullets)
                 bullet.Draw(_spriteBatch);
 
-            //_spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(10, 10), Color.Black);
+            //_spriteBatch.DrawString(overseerFont, bullets.Count.ToString(), new Vector2(10, 10), Color.Black);
 
             _spriteBatch.End();
             base.Draw(gameTime);
