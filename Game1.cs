@@ -33,6 +33,7 @@ namespace MonoGameFinal___Fallout_Shootout
         
         float playerAngle;
         float seconds, gunCoolDown;
+        float bulletLocation;
         
         SpriteFont overseerFont;
 
@@ -59,10 +60,10 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
+            paMinigunRect = new Rectangle(0, 0, 350, 350);
             seconds = 0f;
             gunCoolDown = 0.05f;
-            //paMinigunRect = new Rectangle(0, 200, 200, 200);
-            //bulletRect = new Rectangle(100, 100, 5, 5);
+            bulletRect = new Rectangle(100, 100, 5, 5);
 
             bullets = new List<Bullet>();
             enemies = new List<Enemy>();
@@ -70,7 +71,7 @@ namespace MonoGameFinal___Fallout_Shootout
             ammoCount = 250;
 
             base.Initialize();
-            player = new Player(paMinigunTexture, 350, 350);
+            player = new Player(paMinigunTexture, paMinigunRect.X, paMinigunRect.Y);
         }
 
         protected override void LoadContent()
@@ -126,7 +127,7 @@ namespace MonoGameFinal___Fallout_Shootout
                 }
             }
 
-            //enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
+            enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
 
             //foreach (Enemy enemy in enemies)
             //{
@@ -151,6 +152,18 @@ namespace MonoGameFinal___Fallout_Shootout
                 player.HSpeed *= 1.8f;
             }
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
+
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                
+
+                if (bulletRect.Intersects(eyeBotRect)) // removes enemies after touching bullet
+                {
+                    enemies.RemoveAt(i);
+                    i--;
+                }
+            }
             player.Update(gameTime);
 
             Window.Title = bullets.Count + "";
