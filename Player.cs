@@ -23,6 +23,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _texture = texture;
             _location = new Rectangle(x, y, 100, 100);
             _speed = new Vector2();
+            _speed.Normalize();
             _angle = 0f;
         }
 

@@ -15,15 +15,15 @@ namespace MonoGameFinal___Fallout_Shootout
     {
         public static List<Enemy> enemies = new List<Enemy>();
         private Texture2D _texture;
-        private Rectangle _location;
+        public Rectangle _location;
         public Vector2 _speed;
 
 
-        public Enemy(Texture2D texture, int x, int y, Vector2 newPos)
+        public Enemy(Texture2D texture, int x, int y)
         {
             _texture = texture;
             _location = new Rectangle(x, y, 200, 200);
-            _speed = new Vector2();
+            _speed = new Vector2(1.2f, 1.2f);
         }
 
         public float HSpeed
@@ -38,9 +38,30 @@ namespace MonoGameFinal___Fallout_Shootout
             set { _speed.Y = value; }
         }
 
-        public void Update(GameTime gameTime)
+        public void UpdateSpeed(Player player)
         {
-            
+            if(player._location.Center.X > _location.Center.X)
+            {
+                _speed.X = 1.2f;
+            }
+            else if (player._location.Center.X < _location.Center.X)
+            {
+                _speed.X = -1.2f;
+            }
+
+            if (player._location.Center.Y > _location.Center.Y)
+            {
+                _speed.Y = 1.2f;
+            }
+            else if (player._location.Center.Y < _location.Center.Y)
+            {
+                _speed.Y = -1.2f;
+            }
+        }
+
+        public void Update() 
+        {
+            _location.Offset(_speed);
         }
 
         public void Draw(SpriteBatch spriteBatch)

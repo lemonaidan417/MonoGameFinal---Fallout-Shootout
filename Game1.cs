@@ -32,7 +32,9 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D backgroundTexture;
         
         float playerAngle;
-        float seconds, gunCoolDown;
+        float secondsGun, gunCoolDown;
+        float secondsEnemy, spawnCoolDown;
+        float secondsMoveDelay, moveCoolDown;
         
         SpriteFont overseerFont;
 
@@ -44,6 +46,8 @@ namespace MonoGameFinal___Fallout_Shootout
 
         float ammoCount;
         float ammoDeplet;
+
+        Random generator;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -59,8 +63,12 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-            seconds = 0f;
+            secondsGun = 0f;
             gunCoolDown = 0.05f;
+            secondsEnemy = 0f;
+            spawnCoolDown = 1f;
+            secondsMoveDelay = 0f;
+            moveCoolDown = 0.5f;
             //paMinigunRect = new Rectangle(0, 200, 200, 200);
             //bulletRect = new Rectangle(100, 100, 5, 5);
 
@@ -68,6 +76,8 @@ namespace MonoGameFinal___Fallout_Shootout
             enemies = new List<Enemy>();
 
             ammoCount = 250;
+
+            generator = new Random();
 
             base.Initialize();
             player = new Player(paMinigunTexture, 350, 350);
@@ -91,7 +101,10 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            seconds += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsGun += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
             ks1 = Keyboard.GetState();
@@ -109,10 +122,10 @@ namespace MonoGameFinal___Fallout_Shootout
             // ^ is for semi automatic weapons
             if (keyboardState.IsKeyDown(Keys.Space))
             {
-                if (seconds >= gunCoolDown)
+                if (secondsGun >= gunCoolDown)
                 {
                     bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
-                    seconds = 0;
+                    secondsGun = 0;
                 }
             }
             for (int i = 0; i < bullets.Count; i++)
@@ -125,12 +138,27 @@ namespace MonoGameFinal___Fallout_Shootout
                     i--;
                 }
             }
+            if (secondsEnemy >= spawnCoolDown)
+            {
+                enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, window.Width), generator.Next(0, window.Height)));
+                secondsEnemy = 0;
+            }
 
-            //enemies.Add(new Enemy(eyeBotTexture, eyeBotRect.X, eyeBotRect.Y, eyeBotSpeed));
 
-            //foreach (Enemy enemy in enemies)
-            //{
-            //}
+            foreach (Enemy enemy in enemies)
+            {
+                // Recalculate enemy speed
+                if (secondsMoveDelay >= moveCoolDown)
+                {
+                   
+                    enemy.UpdateSpeed(player);
+                }
+
+                enemy.Update();
+                
+            }
+            if (secondsMoveDelay >= moveCoolDown)
+                secondsMoveDelay = 0;
 
             player.HSpeed = 0;
             player.VSpeed = 0;
@@ -153,7 +181,7 @@ namespace MonoGameFinal___Fallout_Shootout
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
             player.Update(gameTime);
 
-            Window.Title = bullets.Count + "";
+            Window.Title = enemies.Count + "";
 
             base.Update(gameTime);
         }
