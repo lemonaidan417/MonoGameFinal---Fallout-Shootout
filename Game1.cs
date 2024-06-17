@@ -32,9 +32,14 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D backgroundTexture;
         
         float playerAngle;
+<<<<<<< HEAD
         float secondsGun, gunCoolDown;
         float secondsEnemy, spawnCoolDown;
         float secondsMoveDelay, moveCoolDown;
+=======
+        float seconds, gunCoolDown;
+        float bulletLocation;
+>>>>>>> eed09db112c6a4613f56e9f6cfadfa5d07636331
         
         SpriteFont overseerFont;
 
@@ -63,6 +68,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
+<<<<<<< HEAD
             secondsGun = 0f;
             gunCoolDown = 0.05f;
             secondsEnemy = 0f;
@@ -71,6 +77,12 @@ namespace MonoGameFinal___Fallout_Shootout
             moveCoolDown = 0.5f;
             //paMinigunRect = new Rectangle(0, 200, 200, 200);
             //bulletRect = new Rectangle(100, 100, 5, 5);
+=======
+            paMinigunRect = new Rectangle(0, 0, 350, 350);
+            seconds = 0f;
+            gunCoolDown = 0.05f;
+            bulletRect = new Rectangle(100, 100, 5, 5);
+>>>>>>> eed09db112c6a4613f56e9f6cfadfa5d07636331
 
             bullets = new List<Bullet>();
             enemies = new List<Enemy>();
@@ -80,7 +92,7 @@ namespace MonoGameFinal___Fallout_Shootout
             generator = new Random();
 
             base.Initialize();
-            player = new Player(paMinigunTexture, 350, 350);
+            player = new Player(paMinigunTexture, paMinigunRect.X, paMinigunRect.Y);
         }
 
         protected override void LoadContent()
@@ -144,7 +156,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 secondsEnemy = 0;
             }
 
-
             foreach (Enemy enemy in enemies)
             {
                 // Recalculate enemy speed
@@ -178,6 +189,18 @@ namespace MonoGameFinal___Fallout_Shootout
                 player.HSpeed *= 1.8f;
             }
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
+
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                
+
+                if (bulletRect.Intersects(eyeBotRect)) // removes enemies after touching bullet
+                {
+                    enemies.RemoveAt(i);
+                    i--;
+                }
+            }
             player.Update(gameTime);
 
             Window.Title = enemies.Count + "";
