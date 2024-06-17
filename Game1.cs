@@ -150,7 +150,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 // Recalculate enemy speed
                 if (secondsMoveDelay >= moveCoolDown)
                 {
-                   
                     enemy.UpdateSpeed(player);
                 }
 
