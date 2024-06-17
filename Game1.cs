@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
@@ -32,14 +34,10 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D backgroundTexture;
         
         float playerAngle;
-<<<<<<< HEAD
         float secondsGun, gunCoolDown;
         float secondsEnemy, spawnCoolDown;
         float secondsMoveDelay, moveCoolDown;
-=======
-        float seconds, gunCoolDown;
         float bulletLocation;
->>>>>>> eed09db112c6a4613f56e9f6cfadfa5d07636331
         
         SpriteFont overseerFont;
 
@@ -68,21 +66,16 @@ namespace MonoGameFinal___Fallout_Shootout
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
 
-<<<<<<< HEAD
             secondsGun = 0f;
             gunCoolDown = 0.05f;
             secondsEnemy = 0f;
-            spawnCoolDown = 1f;
+            spawnCoolDown = 2.5f;
             secondsMoveDelay = 0f;
             moveCoolDown = 0.5f;
             //paMinigunRect = new Rectangle(0, 200, 200, 200);
             //bulletRect = new Rectangle(100, 100, 5, 5);
-=======
             paMinigunRect = new Rectangle(0, 0, 350, 350);
-            seconds = 0f;
-            gunCoolDown = 0.05f;
             bulletRect = new Rectangle(100, 100, 5, 5);
->>>>>>> eed09db112c6a4613f56e9f6cfadfa5d07636331
 
             bullets = new List<Bullet>();
             enemies = new List<Enemy>();
@@ -161,12 +154,11 @@ namespace MonoGameFinal___Fallout_Shootout
                 // Recalculate enemy speed
                 if (secondsMoveDelay >= moveCoolDown)
                 {
-                    enemy.UpdateSpeed(player);
+                    enemy.Move(player);
                 }
-
                 enemy.Update();
-                
             }
+            HandleCollisions();
             if (secondsMoveDelay >= moveCoolDown)
                 secondsMoveDelay = 0;
 
@@ -191,21 +183,65 @@ namespace MonoGameFinal___Fallout_Shootout
             playerAngle = (float)Math.Atan2(player.VSpeed, player.HSpeed);
 
 
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                
-
-                if (bulletRect.Intersects(eyeBotRect)) // removes enemies after touching bullet
-                {
-                    enemies.RemoveAt(i);
-                    i--;
-                }
-            }
             player.Update(gameTime);
-
             Window.Title = enemies.Count + "";
 
             base.Update(gameTime);
+        }
+        private void HandleCollisions()
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                for (int j = i + 1; j < enemies.Count; j++)
+                {
+                    if (enemies[i]._location.Intersects(enemies[j]._location))
+                    {
+                        ResolveCollision(enemies[i], enemies[j]);
+                    }
+                }
+            }
+        }
+
+        private void ResolveCollision(Enemy enemy1, Enemy enemy2)
+        {
+            // Basic collision resolution by moving enemies apart
+            var overlap = GetOverlap(enemy1._location, enemy2._location);
+
+            if (overlap.X > overlap.Y)
+            {
+                // Vertical collision
+                if (enemy1._location.Y < enemy2._location.Y)
+                {
+                    enemy1._location.Y -= (int)overlap.Y / 2;
+                    enemy2._location.Y += (int)overlap.Y / 2;
+                }
+                else
+                {
+                    enemy1._location.Y += (int)overlap.Y / 2;
+                    enemy2._location.Y -= (int)overlap.Y / 2;
+                }
+            }
+            else
+            {
+                // Horizontal collision
+                if (enemy1._location.X < enemy2._location.X)
+                {
+                    enemy1._location.X -= (int)overlap.X / 2;
+                    enemy2._location.X += (int)overlap.X / 2;
+                }
+                else
+                {
+                    enemy1._location.X += (int)overlap.X / 2;
+                    enemy2._location.X -= (int)overlap.X / 2;
+                }
+            }
+        }
+
+        private Vector2 GetOverlap(Rectangle rect1, Rectangle rect2)
+        {
+            float overlapX = Math.Min(rect1.Right, rect2.Right) - Math.Max(rect1.Left, rect2.Left);
+            float overlapY = Math.Min(rect1.Bottom, rect2.Bottom) - Math.Max(rect1.Top, rect2.Top);
+            return new Vector2(overlapX, overlapY);
         }
 
         protected override void Draw(GameTime gameTime)

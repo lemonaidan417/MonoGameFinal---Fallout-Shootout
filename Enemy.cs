@@ -38,9 +38,9 @@ namespace MonoGameFinal___Fallout_Shootout
             set { _speed.Y = value; }
         }
 
-        public void UpdateSpeed(Player player)
+        public void Move(Player player)
         {
-            if(player._location.Center.X > _location.Center.X)
+            if (player._location.Center.X > _location.Center.X)
             {
                 _speed.X = 1.2f;
             }
@@ -62,6 +62,61 @@ namespace MonoGameFinal___Fallout_Shootout
         public void Update() 
         {
             _location.Offset(_speed);
+        }
+        public void HandleCollisions()
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                for (int j = i + 1; j < enemies.Count; j++)
+                {
+                    if (enemies[i]._location.Intersects(enemies[j]._location))
+                    {
+                        ResolveCollision(enemies[i], enemies[j]);
+                    }
+                }
+            }
+        }
+
+        public void ResolveCollision(Enemy enemy1, Enemy enemy2)
+        {
+            // Basic collision resolution by moving enemies apart
+            var overlap = GetOverlap(enemy1._location, enemy2._location);
+
+            if (overlap.X > overlap.Y)
+            {
+                // Vertical collision
+                if (enemy1._location.Y < enemy2._location.Y)
+                {
+                    enemy1._location.Y -= (int)overlap.Y / 2;
+                    enemy2._location.Y += (int)overlap.Y / 2;
+                }
+                else
+                {
+                    enemy1._location.Y += (int)overlap.Y / 2;
+                    enemy2._location.Y -= (int)overlap.Y / 2;
+                }
+            }
+            else
+            {
+                // Horizontal collision
+                if (enemy1._location.X < enemy2._location.X)
+                {
+                    enemy1._location.X -= (int)overlap.X / 2;
+                    enemy2._location.X += (int)overlap.X / 2;
+                }
+                else
+                {
+                    enemy1._location.X += (int)overlap.X / 2;
+                    enemy2._location.X -= (int)overlap.X / 2;
+                }
+            }
+        }
+
+        public Vector2 GetOverlap(Rectangle rect1, Rectangle rect2)
+        {
+            float overlapX = Math.Min(rect1.Right, rect2.Right) - Math.Max(rect1.Left, rect2.Left);
+            float overlapY = Math.Min(rect1.Bottom, rect2.Bottom) - Math.Max(rect1.Top, rect2.Top);
+            return new Vector2(overlapX, overlapY);
         }
 
         public void Draw(SpriteBatch spriteBatch)
