@@ -16,6 +16,7 @@ namespace MonoGameFinal___Fallout_Shootout
         public static List<Enemy> enemies = new List<Enemy>();
         private Texture2D _texture;
         public Rectangle _location;
+        public Rectangle _rect;
         public Vector2 _speed;
 
 
@@ -24,6 +25,7 @@ namespace MonoGameFinal___Fallout_Shootout
             _texture = texture;
             _location = new Rectangle(x, y, 200, 200);
             _speed = new Vector2(1.2f, 1.2f);
+            _rect = new Rectangle(_location.Location, new Point(_location.X, _location.Y));
         }
 
         public float HSpeed
@@ -58,79 +60,26 @@ namespace MonoGameFinal___Fallout_Shootout
                 _speed.Y = -1.2f;
             }
         }
-
         public void Update() 
         {
             _location.Offset(_speed);
         }
-        public void HandleCollisions()
+        public Rectangle Rect
         {
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                for (int j = i + 1; j < enemies.Count; j++)
-                {
-                    if (enemies[i]._location.Intersects(enemies[j]._location))
-                    {
-                        ResolveCollision(enemies[i], enemies[j]);
-                    }
-                }
-            }
+            get { return _rect; }
         }
-
-        public void ResolveCollision(Enemy enemy1, Enemy enemy2)
-        {
-            // Basic collision resolution by moving enemies apart
-            var overlap = GetOverlap(enemy1._location, enemy2._location);
-
-            if (overlap.X > overlap.Y)
-            {
-                // Vertical collision
-                if (enemy1._location.Y < enemy2._location.Y)
-                {
-                    enemy1._location.Y -= (int)overlap.Y / 2;
-                    enemy2._location.Y += (int)overlap.Y / 2;
-                }
-                else
-                {
-                    enemy1._location.Y += (int)overlap.Y / 2;
-                    enemy2._location.Y -= (int)overlap.Y / 2;
-                }
-            }
-            else
-            {
-                // Horizontal collision
-                if (enemy1._location.X < enemy2._location.X)
-                {
-                    enemy1._location.X -= (int)overlap.X / 2;
-                    enemy2._location.X += (int)overlap.X / 2;
-                }
-                else
-                {
-                    enemy1._location.X += (int)overlap.X / 2;
-                    enemy2._location.X -= (int)overlap.X / 2;
-                }
-            }
-        }
-
-        public Vector2 GetOverlap(Rectangle rect1, Rectangle rect2)
-        {
-            float overlapX = Math.Min(rect1.Right, rect2.Right) - Math.Max(rect1.Left, rect2.Left);
-            float overlapY = Math.Min(rect1.Bottom, rect2.Bottom) - Math.Max(rect1.Top, rect2.Top);
-            return new Vector2(overlapX, overlapY);
-        }
-
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, 0, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
         }
         public bool Collide(Rectangle item)
         {
-            return _location.Intersects(item);
+            return _rect.Intersects(item);
         }
 
         public Boolean Contains(Rectangle item)
         {
-            return _location.Contains(item);
+            return _rect.Contains(item);
         }
     }
 }

@@ -63,6 +63,11 @@ namespace MonoGameFinal___Fallout_Shootout
             return _rect.Contains(item);
         }
 
+        internal static bool Collide(List<Enemy> enemies)
+        {
+            throw new NotImplementedException();
+        }
+
 
 
 
