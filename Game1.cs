@@ -150,7 +150,8 @@ namespace MonoGameFinal___Fallout_Shootout
             }
             for (int i = 0; i < enemies.Count; i++)
             {
-                if (Bullet.Collide(enemies))
+                enemies[i].Update();
+                if (Bullet.Collide(enemies[i].Rect))
                 {
                     enemies.RemoveAt(i);
                     i--;
