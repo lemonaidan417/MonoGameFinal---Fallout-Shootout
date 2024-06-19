@@ -22,6 +22,11 @@ namespace MonoGameFinal___Fallout_Shootout
         Texture2D paMinigunTexture;
         Rectangle paMinigunRect;
 
+        Rectangle rectangleRect;
+        Rectangle rectangleHealthRect;
+        Rectangle rectangleAmmoRect;
+        Texture2D rectangleTexture;
+
         Rectangle bulletRect;
         Texture2D bulletTexture;
         Vector2 bulletSpeed;
@@ -40,9 +45,7 @@ namespace MonoGameFinal___Fallout_Shootout
         float bulletLocation;
         
         SpriteFont overseerFont;
-
-        Texture2D hitBoxTexture;
-        Rectangle hitBoxRect;
+        SpriteFont overseerFontUI;
 
         MouseState mouseState, prevMouseState;
         KeyboardState keyboardState, ks1, ks2;
@@ -51,6 +54,8 @@ namespace MonoGameFinal___Fallout_Shootout
         float ammoDeplet;
 
         Random generator;
+
+        Color textColor;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -76,6 +81,11 @@ namespace MonoGameFinal___Fallout_Shootout
             //bulletRect = new Rectangle(100, 100, 5, 5);
             paMinigunRect = new Rectangle(0, 0, 350, 350);
             bulletRect = new Rectangle(100, 100, 5, 5);
+            rectangleRect = new Rectangle(0, 0, 200, 100);
+            rectangleHealthRect = new Rectangle(0, 10, 190, 40);
+            rectangleAmmoRect = new Rectangle(0, 40, 190, 40);
+
+            textColor = Color.Transparent;
 
             bullets = new List<Bullet>();
             enemies = new List<Enemy>();
@@ -95,8 +105,10 @@ namespace MonoGameFinal___Fallout_Shootout
             paMinigunTexture = Content.Load<Texture2D>("final-pa-minigun");
             bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
+            overseerFontUI = Content.Load<SpriteFont>("overseerFontUI");
             backgroundTexture = Content.Load<Texture2D>("desert-background");
             eyeBotTexture = Content.Load<Texture2D>("eyebot-pixilart");
+            rectangleTexture = Content.Load<Texture2D>("Rectangle");
 
 
             // TODO: use this.Content to load your game content here
@@ -113,30 +125,35 @@ namespace MonoGameFinal___Fallout_Shootout
             // TODO: Add your update logic here
             keyboardState = Keyboard.GetState();
             ks1 = Keyboard.GetState();
-            
+
             prevMouseState = mouseState;
             mouseState = Mouse.GetState();
 
-
-            //if (ks1.IsKeyDown(Keys.Space) && ks2.IsKeyUp(Keys.Space))
-            //{
-            //    bullets.Add(new Bullet(bulletTexture, paMinigunRect.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
-            //}
-            //ks2 = ks1;
-
-            // ^ is for semi automatic weapons
             if (keyboardState.IsKeyDown(Keys.Space))
             {
-                if (secondsGun >= gunCoolDown)
+                if (secondsGun >= gunCoolDown && rectangleAmmoRect.Right > 0)
                 {
+                    textColor = Color.Transparent;
                     bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
+                    rectangleAmmoRect.X -= 1;
                     secondsGun = 0;
                 }
+                else
+                {
+                    textColor = Color.Black;
+                    if (secondsGun >= 3)
+                    {
+                        rectangleAmmoRect.X = 0;
+                        textColor = Color.Transparent;
+                        secondsGun = 0;
+                    }
+                }
             }
+            
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Update();
-               
+
                 if (!window.Intersects(bullets[i].Rect)) // Removes bullets after they leave the window
                 {
                     bullets.RemoveAt(i);
@@ -148,15 +165,10 @@ namespace MonoGameFinal___Fallout_Shootout
                 enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, window.Width), generator.Next(0, window.Height)));
                 secondsEnemy = 0;
             }
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                enemies[i].Update();
-                if (Bullet.Collide(enemies[i].Rect))
-                {
-                    enemies.RemoveAt(i);
-                    i--;
-                }
-            }
+            //for (int i = 0; i < bullets.Count; i++)
+            //{
+            //    bullets[i].Update();
+            //}
 
             foreach (Enemy enemy in enemies)
             {
@@ -192,7 +204,13 @@ namespace MonoGameFinal___Fallout_Shootout
 
 
             player.Update(gameTime);
-            Window.Title = enemies.Count + "";
+            rectangleHealthRect.X -= 0;
+
+            if (rectangleHealthRect.Right < 0)
+            {
+                Exit();
+            }
+            Window.Title = mouseState.Position + "";
 
             base.Update(gameTime);
         }
@@ -206,7 +224,14 @@ namespace MonoGameFinal___Fallout_Shootout
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgroundTexture, window, Color.White);
 
-            //_spriteBatch.Draw(bulletTexture, bulletRect, Color.White);
+            
+
+            _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
+            _spriteBatch.Draw(rectangleTexture, rectangleHealthRect, Color.DarkRed);
+            _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
+            _spriteBatch.Draw(rectangleTexture, rectangleAmmoRect, Color.Goldenrod);
+
+            _spriteBatch.DrawString(overseerFontUI, "Reloading", new Vector2(player._location.X, player._location.Top), textColor);
 
             player.Draw(_spriteBatch);
             foreach (Enemy enemy in enemies)
@@ -215,7 +240,6 @@ namespace MonoGameFinal___Fallout_Shootout
             foreach (Bullet bullet in bullets)
                 bullet.Draw(_spriteBatch);
 
-            //_spriteBatch.DrawString(overseerFont, bullets.Count.ToString(), new Vector2(10, 10), Color.Black);
 
             _spriteBatch.End();
             base.Draw(gameTime);
