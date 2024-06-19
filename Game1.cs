@@ -140,7 +140,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 }
                 else
                 {
-                    textColor = Color.Black;
                     if (secondsGun >= 3)
                     {
                         rectangleAmmoRect.X = 0;
