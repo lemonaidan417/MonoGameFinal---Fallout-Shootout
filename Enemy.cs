@@ -1,45 +1,34 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Reflection.Metadata;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
     class Enemy
     {
-        public static List<Enemy> enemies = new List<Enemy>();
         private Texture2D _texture;
         public Rectangle _location;
-        public Rectangle _rect;
         public Vector2 _speed;
-
+        public int Health { get; set; }
+        public int MaxHealth { get; set; }
 
         public Enemy(Texture2D texture, int x, int y)
         {
             _texture = texture;
             _location = new Rectangle(x, y, 200, 200);
             _speed = new Vector2(1.2f, 1.2f);
-            _rect = new Rectangle(_location.Location, new Point(_location.X, _location.Y));
+            Health = 5;
+            MaxHealth = 5;
         }
 
-        public float HSpeed
+        public void TakeDamage(int damage)
         {
-            get { return _speed.X; }
-            set { _speed.X = value; }
+            Health -= damage;
+            if (Health < 0)
+            {
+                Health = 0; // Ensure health doesn't go negative
+            }
         }
-
-        public float VSpeed
-        {
-            get { return _speed.Y; }
-            set { _speed.Y = value; }
-        }
-
         public void Move(Player player)
         {
             if (player._location.Center.X > _location.Center.X)
@@ -60,26 +49,25 @@ namespace MonoGameFinal___Fallout_Shootout
                 _speed.Y = -1.2f;
             }
         }
-        public void Update() 
+
+        public bool IsAlive()
+        {
+            return Health > 0;
+        }
+
+        public bool Collide(Rectangle item)
+        {
+            return _location.Intersects(item);
+        }
+
+        public void Update()
         {
             _location.Offset(_speed);
         }
-        public Rectangle Rect
-        {
-            get { return _rect; }
-        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, 0, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
-        }
-        public bool Collide(Rectangle item)
-        {
-            return _rect.Intersects(item);
-        }
-
-        public Boolean Contains(Rectangle item)
-        {
-            return _rect.Contains(item);
+            spriteBatch.Draw(_texture, _location, Color.White);
         }
     }
 }

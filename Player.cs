@@ -1,13 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Diagnostics;
 
 namespace MonoGameFinal___Fallout_Shootout
 {
@@ -17,14 +11,31 @@ namespace MonoGameFinal___Fallout_Shootout
         public Rectangle _location;
         public Vector2 _speed;
         public float _angle;
+        public int Health { get; set; }
+        public int MaxHealth { get; set; }
 
         public Player(Texture2D texture, int x, int y)
         {
             _texture = texture;
             _location = new Rectangle(x, y, 100, 100);
-            _speed = new Vector2();
-            _speed.Normalize();
+            _speed = Vector2.Zero;
             _angle = 0f;
+            Health = 50;
+            MaxHealth = 50;
+        }
+
+        public void TakeDamage(int damage)
+        {
+            Health -= damage;
+            if (Health < 0)
+            {
+                Health = 0; // Ensure health doesn't go negative
+            }
+        }
+
+        public bool IsAlive()
+        {
+            return Health > 0;
         }
 
         public float HSpeed
@@ -37,20 +48,6 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             get { return _speed.Y; }
             set { _speed.Y = value; }
-        }
-
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            if ((_angle >= -2.4 && _angle < -1.6) || (_angle <= 3.15 && _angle >= 1.6))
-            {
-                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
-
-            }
-            else
-            {
-                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
-            }
         }
 
         private void Move()
@@ -76,9 +73,18 @@ namespace MonoGameFinal___Fallout_Shootout
             return _location.Intersects(item);
         }
 
-        public Boolean Contains(Rectangle item)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            return _location.Contains(item);
+            
+            if ((_angle >= -2.4 && _angle < -1.6) || (_angle <= 3.15 && _angle >= 1.6))
+            {
+                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
+
+            }
+            else
+            {
+                spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.None, 1f);
+            }
         }
     }
 }
