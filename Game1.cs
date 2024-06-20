@@ -68,8 +68,6 @@ namespace MonoGameFinal___Fallout_Shootout
             spawnCoolDown = 0.5f;
             secondsMoveDelay = 0f;
             moveCoolDown = 0.5f;
-            //paMinigunRect = new Rectangle(0, 200, 200, 200);
-            //bulletRect = new Rectangle(100, 100, 5, 5);
             paMinigunRect = new Rectangle(0, 0, 350, 350);
             rectangleHealthRect = new Rectangle(0, 10, 190, 40);
             rectangleAmmoRect = new Rectangle(0, 40, 190, 40);
@@ -116,7 +114,7 @@ namespace MonoGameFinal___Fallout_Shootout
             prevMouseState = mouseState;
             mouseState = Mouse.GetState();
 
-            if (keyboardState.IsKeyDown(Keys.Space))
+            if (keyboardState.IsKeyDown(Keys.Space) ||  mouseState.LeftButton == ButtonState.Pressed)
             {
                 if (secondsGun >= gunCoolDown && rectangleAmmoRect.Right > 0)
                 {
@@ -148,7 +146,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     i--;
                 }
             }
-            if (secondsEnemy >= 0.3f) // Drawing enemies is broken right now
+            if (secondsEnemy >= 0.5f) // Drawing enemies is broken right now
             {
                 numRand = generator.Next(0, 3);
                 if (numRand == 0)
@@ -169,7 +167,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     enemies.Add(new Enemy(eyeBotTexture, 100, generator.Next(0, 100)));
 
                 }
-                else if (numRand >= 3)
+                else if (numRand == 3)
                 {
                     // Left
                     enemies.Add(new Enemy(eyeBotTexture, 0, generator.Next(0, 100)));
@@ -177,10 +175,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 }
                 secondsEnemy = 0;
             }
-            //for (int i = 0; i < bullets.Count; i++)
-            //{
-            //    bullets[i].Update();
-            //}
             List<Enemy> enemiesToRemove = new List<Enemy>();
             List<Bullet> bulletsToRemove = new List<Bullet>();
 
@@ -280,10 +274,8 @@ namespace MonoGameFinal___Fallout_Shootout
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgroundTexture, window, Color.White);
 
-            
-
             _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
-            _spriteBatch.Draw(rectangleTexture, rectangleHealthRect, Color.DarkRed);
+            _spriteBatch.Draw(rectangleTexture, rectangleHealthRect, Color.Green);
             _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
             _spriteBatch.Draw(rectangleTexture, rectangleAmmoRect, Color.Goldenrod);
 
@@ -292,7 +284,7 @@ namespace MonoGameFinal___Fallout_Shootout
             player.Draw(_spriteBatch);
             foreach (Enemy enemy in enemies)
             {
-                enemy.Draw(_spriteBatch); Rectangle healthBarRect = new Rectangle(enemy._location.X, enemy._location.Left - 10, enemy._location.Y, 5);
+                enemy.Draw(_spriteBatch); Rectangle healthBarRect = new Rectangle(enemy._location.X, enemy._location.Y - 10, enemy._location.Left, 5);
                 float healthPercentage = (float)enemy.Health / enemy.MaxHealth; // Calculate percentage of health remaining
 
                 // Draw health bar background (gray or red)
@@ -303,13 +295,10 @@ namespace MonoGameFinal___Fallout_Shootout
                 _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Green);
             }
 
-
             foreach (Bullet bullet in bullets)
             {
                 bullet.Draw(_spriteBatch);
             }
-                
-
 
             _spriteBatch.End();
             base.Draw(gameTime);
