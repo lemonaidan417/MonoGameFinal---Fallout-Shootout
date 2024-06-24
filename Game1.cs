@@ -51,10 +51,11 @@ namespace MonoGameFinal___Fallout_Shootout
 
         Rectangle window;
         Texture2D backgroundTexture;
-        
+
         float secondsGun, gunCoolDown;
         float secondsEnemy, spawnCoolDown;
         float secondsMoveDelay, moveCoolDown;
+        float secondsTextFlash;
         float numRand;
 
         bool start;
@@ -71,6 +72,8 @@ namespace MonoGameFinal___Fallout_Shootout
         Color textColor;
 
         Screen screen;
+        float vaultDoorRotation; // Rotation angle for the vault door
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -95,7 +98,7 @@ namespace MonoGameFinal___Fallout_Shootout
             paMinigunRect = new Rectangle(0, 0, 350, 350);
             rectangleHealthRect = new Rectangle(0, 10, 190, 40);
             rectangleAmmoRect = new Rectangle(0, 40, 190, 40);
-            vaultDoorRect = new Rectangle(176, 94, 530, 545);
+            vaultDoorRect = new Rectangle(468, 390, 530, 545);
             vaultBoyRect = new Rectangle(0, 0, 1200, 1200);
             introBackgroundRect = new Rectangle(-50, -100, window.Width, window.Height);
 
@@ -110,6 +113,7 @@ namespace MonoGameFinal___Fallout_Shootout
             generator = new Random();
 
             screen = Screen.Intro;
+            vaultDoorRotation = 0f; // Initialize rotation
 
             base.Initialize();
             player = new Player(paMinigunTexture, paMinigunRect.X, paMinigunRect.Y);
@@ -145,23 +149,36 @@ namespace MonoGameFinal___Fallout_Shootout
                 mouseState = Mouse.GetState();
                 keyboardState = Keyboard.GetState();
                 Window.Title = mouseState.Position + "";
+                textColor = Color.White;
+                secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (secondsTextFlash == 1)
+                {
+                    textColor = Color.Transparent;
+                    if (secondsTextFlash == 2)
+                    {
+                        secondsTextFlash = 0;
+                    }
+                }
 
                 if (keyboardState.IsKeyDown(Keys.Enter))
                 {
                     start = true;
                 }
-                if (start == true && vaultDoorRect.Right != 1600)
+                if (start == true && vaultDoorRect.Right != 1400)
                 {
                     vaultDoorRect.X += 2;
+                    vaultDoorRotation += 0.01f; // Increment the rotation angle
                 }
-                else if (vaultDoorRect.Right == 1600)
+                else if (vaultDoorRect.Right == 1400)
                 {
                     screen = Screen.Main;
+                    textColor = Color.Black;
                 }
             }
             else if (screen == Screen.Main)
             {
-                
+
                 secondsGun += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -337,8 +354,8 @@ namespace MonoGameFinal___Fallout_Shootout
 
             }
         }
-            
-        
+
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -349,9 +366,37 @@ namespace MonoGameFinal___Fallout_Shootout
             if (screen == Screen.Intro)
             {
                 _spriteBatch.Draw(introBackgroundTexture, introBackgroundRect, Color.White);
-                _spriteBatch.Draw(vaultDoorTexture, vaultDoorRect, Color.White);
+
+                // Draw the vault door with rotation
+                _spriteBatch.Draw(vaultDoorTexture,
+                    new Vector2(vaultDoorRect.X, vaultDoorRect.Y),
+                    null, Color.White, vaultDoorRotation,
+                    new Vector2(vaultDoorRect.Width / 2, vaultDoorRect.Height / 2),
+                    1f, SpriteEffects.None, 0f);
+
                 _spriteBatch.Draw(vaultEntryTexture, window, Color.White);
-                _spriteBatch.Draw(vaultBoyTexture, vaultBoyRect, null, Color.White, 0, new Vector2(vaultBoyTexture.Width, vaultBoyTexture.Height),SpriteEffects.FlipVertically, 1f);
+                if (start == false)
+                {
+                    _spriteBatch.Draw(vaultBoyTexture, new Rectangle(-150, 230, vaultBoyRect.Width - 500, vaultBoyRect.Height - 500), Color.White);
+                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(7, 8), Color.White);
+                    if (secondsTextFlash == 1)
+                    {
+                        _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), textColor);
+                    }
+                    else
+                    {
+                        _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), Color.Transparent);
+                        secondsTextFlash = 0;
+                    }
+                    
+                }
+                else
+                {
+                    _spriteBatch.Draw(vaultBoyTexture, new Rectangle(-150, 230, vaultBoyRect.Width - 500, vaultBoyRect.Height - 500), Color.Transparent);
+                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(7, 8), Color.Transparent);
+                    _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), Color.Transparent);
+                }
+                
             }
             else if (screen == Screen.Main)
             {
@@ -394,44 +439,6 @@ namespace MonoGameFinal___Fallout_Shootout
 
             _spriteBatch.End();
             base.Draw(gameTime);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             // Thank you so much for your help Mr Aldworth!
         }
