@@ -84,7 +84,7 @@ namespace MonoGameFinal___Fallout_Shootout
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            window = new Rectangle(0, 0, 750, 750);
+            window = new Rectangle(0, 0, 700, 700);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
             _graphics.ApplyChanges();
@@ -98,9 +98,9 @@ namespace MonoGameFinal___Fallout_Shootout
             paMinigunRect = new Rectangle(0, 0, 350, 350);
             rectangleHealthRect = new Rectangle(0, 10, 190, 40);
             rectangleAmmoRect = new Rectangle(0, 40, 190, 40);
-            vaultDoorRect = new Rectangle(468, 390, 530, 545);
+            vaultDoorRect = new Rectangle(502, 463, 675, 725);
             vaultBoyRect = new Rectangle(0, 0, 1200, 1200);
-            introBackgroundRect = new Rectangle(-50, -100, window.Width, window.Height);
+            introBackgroundRect = new Rectangle(-350, -150, window.Width + 650, window.Height + 50);
 
             textColor = Color.Transparent;
 
@@ -116,7 +116,7 @@ namespace MonoGameFinal___Fallout_Shootout
             vaultDoorRotation = 0f; // Initialize rotation
 
             base.Initialize();
-            player = new Player(paMinigunTexture, paMinigunRect.X, paMinigunRect.Y);
+            player = new Player(paMinigunTexture, (window.Center.X - paMinigunRect.X / 2), (window.Center.Y - paMinigunRect.Y / 2));
         }
 
         protected override void LoadContent()
@@ -152,25 +152,31 @@ namespace MonoGameFinal___Fallout_Shootout
                 textColor = Color.White;
                 secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                if (secondsTextFlash == 1)
+                // Toggle text color every second
+                if (secondsTextFlash >= 0 && secondsTextFlash < 1)
+                {
+                    textColor = Color.White;
+                }
+                else if (secondsTextFlash >= 1 && secondsTextFlash < 2)
                 {
                     textColor = Color.Transparent;
-                    if (secondsTextFlash == 2)
-                    {
-                        secondsTextFlash = 0;
-                    }
+                }
+                else if (secondsTextFlash >= 2)
+                {
+                    secondsTextFlash = 0; // Reset the timer
                 }
 
                 if (keyboardState.IsKeyDown(Keys.Enter))
                 {
                     start = true;
+                    secondsTextFlash = 0;
                 }
-                if (start == true && vaultDoorRect.Right != 1400)
+                if (start == true && vaultDoorRect.Left < window.Right)
                 {
-                    vaultDoorRect.X += 2;
+                    vaultDoorRect.X += 1;
                     vaultDoorRotation += 0.01f; // Increment the rotation angle
                 }
-                else if (vaultDoorRect.Right == 1400)
+                else if (vaultDoorRect.X >= window.Right)
                 {
                     screen = Screen.Main;
                     textColor = Color.Black;
@@ -368,27 +374,14 @@ namespace MonoGameFinal___Fallout_Shootout
                 _spriteBatch.Draw(introBackgroundTexture, introBackgroundRect, Color.White);
 
                 // Draw the vault door with rotation
-                _spriteBatch.Draw(vaultDoorTexture,
-                    new Vector2(vaultDoorRect.X, vaultDoorRect.Y),
-                    null, Color.White, vaultDoorRotation,
-                    new Vector2(vaultDoorRect.Width / 2, vaultDoorRect.Height / 2),
-                    1f, SpriteEffects.None, 0f);
+                _spriteBatch.Draw(vaultDoorTexture, new Vector2(vaultDoorRect.X, vaultDoorRect.Y), null, Color.White, vaultDoorRotation, new Vector2(vaultDoorRect.Width / 2, vaultDoorRect.Height / 2), 1f, SpriteEffects.None, 0f);
 
                 _spriteBatch.Draw(vaultEntryTexture, window, Color.White);
                 if (start == false)
                 {
                     _spriteBatch.Draw(vaultBoyTexture, new Rectangle(-150, 230, vaultBoyRect.Width - 500, vaultBoyRect.Height - 500), Color.White);
                     _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(7, 8), Color.White);
-                    if (secondsTextFlash == 1)
-                    {
-                        _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), textColor);
-                    }
-                    else
-                    {
-                        _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), Color.Transparent);
-                        secondsTextFlash = 0;
-                    }
-                    
+                    _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), textColor);
                 }
                 else
                 {
