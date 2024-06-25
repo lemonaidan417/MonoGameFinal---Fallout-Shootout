@@ -50,10 +50,20 @@ namespace MonoGameFinal___Fallout_Shootout
             set { _speed.Y = value; }
         }
 
-        private void Move()
+        private void Move(Rectangle window)
         {
             _location.X += (int)_speed.X;
             _location.Y += (int)_speed.Y;
+
+            // Prevent player from moving outside the window borders
+            if (_location.Left < window.Left)
+                _location.X = window.Left;
+            if (_location.Right > window.Right)
+                _location.X = window.Right - _location.Width;
+            if (_location.Top < window.Top)
+                _location.Y = window.Top;
+            if (_location.Bottom > window.Bottom)
+                _location.Y = window.Bottom - _location.Height;
         }
 
         public void UndoMove()
@@ -62,9 +72,9 @@ namespace MonoGameFinal___Fallout_Shootout
             _location.Y -= (int)_speed.Y;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Rectangle window)
         {
-            Move();
+            Move(window);
             _angle = (float)Math.Atan2(_speed.Y, _speed.X);
         }
 
@@ -75,11 +85,9 @@ namespace MonoGameFinal___Fallout_Shootout
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            
             if ((_angle >= -2.4 && _angle < -1.6) || (_angle <= 3.15 && _angle >= 1.6))
             {
                 spriteBatch.Draw(_texture, new Rectangle(_location.Center, _location.Size), null, Color.White, _angle, new Vector2(_texture.Width / 2, _texture.Height / 2), SpriteEffects.FlipVertically, 1f);
-
             }
             else
             {

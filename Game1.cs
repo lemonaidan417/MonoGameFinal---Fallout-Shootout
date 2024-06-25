@@ -77,8 +77,6 @@ namespace MonoGameFinal___Fallout_Shootout
 
         float vaultDoorRotation;
 
-        SoundEffect gunShot1;
-
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -139,7 +137,6 @@ namespace MonoGameFinal___Fallout_Shootout
             vaultDoorTexture = Content.Load<Texture2D>("Vault_65");
             vaultEntryTexture = Content.Load<Texture2D>("final-vaultentry");
             introBackgroundTexture = Content.Load<Texture2D>("final-desertlandscape");
-            gunShot1 = Content.Load<SoundEffect>("gunshot1");
         }
 
         protected override void Update(GameTime gameTime)
@@ -341,8 +338,8 @@ namespace MonoGameFinal___Fallout_Shootout
                     player.VSpeed *= 1.8f;
                     player.HSpeed *= 1.8f;
                 }
+                player.Update(gameTime, window);
 
-                player.Update(gameTime);
                 rectangleHealthRect.X -= 0;
 
                 if (rectangleHealthRect.Right < 0)
@@ -356,11 +353,11 @@ namespace MonoGameFinal___Fallout_Shootout
             }
             else if (screen == Screen.Controls)
             {
-                
+
             }
             else if (screen == Screen.Gameover)
             {
-                
+
             }
         }
 
@@ -423,7 +420,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     {
                         _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Red);
                     }
-                    
+
                 }
 
                 foreach (Bullet bullet in bullets)

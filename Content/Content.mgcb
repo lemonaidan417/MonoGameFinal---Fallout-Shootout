@@ -145,11 +145,11 @@
 /processorParam:TextureFormat=Color
 /build:final-vaultentry.png
 
+#begin Good Old DOS.ttf
+/copy:Good Old DOS.ttf
+
 #begin gunshot1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:gunshot1.wav
+/copy:gunshot1.wav
 
 #begin Overseer Italic.otf
 /copy:Overseer Italic.otf
@@ -179,6 +179,13 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Rectangle.jpg
+
+#begin terminalFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:terminalFont.spritefont
 
 #begin Vault_65.png
 /importer:TextureImporter
