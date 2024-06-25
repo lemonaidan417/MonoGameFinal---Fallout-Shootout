@@ -15,6 +15,7 @@ namespace MonoGameFinal___Fallout_Shootout
         Controls,
         Gameover
     }
+
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -72,7 +73,8 @@ namespace MonoGameFinal___Fallout_Shootout
         Color textColor;
 
         Screen screen;
-        float vaultDoorRotation; // Rotation angle for the vault door
+
+        float vaultDoorRotation;
 
         public Game1()
         {
@@ -83,7 +85,6 @@ namespace MonoGameFinal___Fallout_Shootout
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             window = new Rectangle(0, 0, 700, 700);
             _graphics.PreferredBackBufferWidth = window.Width;
             _graphics.PreferredBackBufferHeight = window.Height;
@@ -95,6 +96,7 @@ namespace MonoGameFinal___Fallout_Shootout
             spawnCoolDown = 0.05f;
             secondsMoveDelay = 0f;
             moveCoolDown = 0.5f;
+
             paMinigunRect = new Rectangle(0, 0, 350, 350);
             rectangleHealthRect = new Rectangle(0, 10, 190, 40);
             rectangleAmmoRect = new Rectangle(0, 40, 190, 40);
@@ -113,7 +115,7 @@ namespace MonoGameFinal___Fallout_Shootout
             generator = new Random();
 
             screen = Screen.Intro;
-            vaultDoorRotation = 0f; // Initialize rotation
+            vaultDoorRotation = 0f;
 
             base.Initialize();
             player = new Player(paMinigunTexture, (window.Center.X - paMinigunRect.X / 2), (window.Center.Y - paMinigunRect.Y / 2));
@@ -131,19 +133,16 @@ namespace MonoGameFinal___Fallout_Shootout
             eyeBotTexture = Content.Load<Texture2D>("eyebot-pixilart");
             rectangleTexture = Content.Load<Texture2D>("Rectangle");
             vaultBoyTexture = Content.Load<Texture2D>("final-vaultboy");
-            //vaultDoorTexture = Content.Load<Texture2D>("final-vaultdoor");
             vaultDoorTexture = Content.Load<Texture2D>("Vault_65");
             vaultEntryTexture = Content.Load<Texture2D>("final-vaultentry");
             introBackgroundTexture = Content.Load<Texture2D>("final-desertlandscape");
-
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
             if (screen == Screen.Intro)
             {
                 mouseState = Mouse.GetState();
@@ -152,7 +151,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 textColor = Color.White;
                 secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                // Toggle text color every second
                 if (secondsTextFlash >= 0 && secondsTextFlash < 1)
                 {
                     textColor = Color.White;
@@ -174,28 +172,26 @@ namespace MonoGameFinal___Fallout_Shootout
                 if (start == true && vaultDoorRect.Left < window.Right)
                 {
                     vaultDoorRect.X += 1;
-                    vaultDoorRotation += 0.01f; // Increment the rotation angle
+                    vaultDoorRotation += 0.01f; // Rotate the Vault door while opening
                 }
                 else if (vaultDoorRect.X >= window.Right)
                 {
                     screen = Screen.Main;
-                    textColor = Color.Black;
+                    textColor = Color.Transparent;
                 }
             }
             else if (screen == Screen.Main)
             {
-
                 secondsGun += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                // TODO: Add your update logic here
+                // Handle input for shooting and reloading
                 keyboardState = Keyboard.GetState();
                 ks1 = Keyboard.GetState();
 
                 prevMouseState = mouseState;
                 mouseState = Mouse.GetState();
-
                 if ((keyboardState.IsKeyDown(Keys.Space) || mouseState.LeftButton == ButtonState.Pressed) && reloading == false)
                 {
                     if (secondsGun >= gunCoolDown && rectangleAmmoRect.Right > 0)
@@ -223,6 +219,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     }
                 }
 
+                // Update bullets and check for collisions
                 for (int i = 0; i < bullets.Count; i++)
                 {
                     bullets[i].Update();
@@ -233,39 +230,40 @@ namespace MonoGameFinal___Fallout_Shootout
                         i--;
                     }
                 }
-                if (secondsEnemy >= 0.5f) // Drawing enemies is broken right now
+
+                // Spawn enemies at random intervals
+                if (secondsEnemy >= 0.4f)
                 {
-                    numRand = generator.Next(0, 3);
+                    numRand = generator.Next(0, 4);
+                    // Top
                     if (numRand == 0)
                     {
-                        // Top
-                        enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, 100), 0));
-
+                        enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, 700), -100));
                     }
+                    // Bottom
                     else if (numRand == 1)
                     {
-                        // Bottom
-                        enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, 100), 100));
-
+                        enemies.Add(new Enemy(eyeBotTexture, generator.Next(0, 700), 800));
                     }
+                    // Left
                     else if (numRand == 2)
                     {
-                        // Right
-                        enemies.Add(new Enemy(eyeBotTexture, 100, generator.Next(0, 100)));
-
+                        enemies.Add(new Enemy(eyeBotTexture, -100, generator.Next(0, 700)));
                     }
+                    // Right
                     else if (numRand == 3)
                     {
-                        // Left
-                        enemies.Add(new Enemy(eyeBotTexture, 0, generator.Next(0, 100)));
-
+                        enemies.Add(new Enemy(eyeBotTexture, 800, generator.Next(0, 700)));
                     }
                     secondsEnemy = 0;
                 }
+
+                // Check collisions between bullets and enemies
+                // Followed a tutorial and is a little confusing, so I'll try to explain it a bit
+
                 List<Enemy> enemiesToRemove = new List<Enemy>();
                 List<Bullet> bulletsToRemove = new List<Bullet>();
 
-                // Check collisions and mark enemies and bullets for removal
                 for (int i = bullets.Count - 1; i >= 0; i--)
                 {
                     Bullet bullet = bullets[i];
@@ -295,13 +293,12 @@ namespace MonoGameFinal___Fallout_Shootout
                     }
                 }
 
-                // Remove enemies marked for removal
+                // Remove enemies and bullets marked for removal
                 foreach (Enemy enemyToRemove in enemiesToRemove)
                 {
                     enemies.Remove(enemyToRemove);
                 }
 
-                // Remove bullets marked for removal
                 foreach (Bullet bulletToRemove in bulletsToRemove)
                 {
                     bullets.Remove(bulletToRemove);
@@ -310,7 +307,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 // Update remaining enemies
                 foreach (Enemy enemy in enemies)
                 {
-                    // Recalculate enemy speed
                     if (secondsMoveDelay >= moveCoolDown)
                     {
                         enemy.Move(player);
@@ -318,9 +314,11 @@ namespace MonoGameFinal___Fallout_Shootout
 
                     enemy.Update();
                 }
+
                 if (secondsMoveDelay >= moveCoolDown)
                     secondsMoveDelay = 0;
 
+                // Handle player movement
                 player.HSpeed = 0;
                 player.VSpeed = 0;
 
@@ -347,27 +345,26 @@ namespace MonoGameFinal___Fallout_Shootout
                 {
                     Exit();
                 }
+
                 Window.Title = mouseState.Position + "";
 
                 base.Update(gameTime);
             }
             else if (screen == Screen.Controls)
             {
-
+                
             }
             else if (screen == Screen.Gameover)
             {
-
+                
             }
         }
-
-
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            // Start drawing
             _spriteBatch.Begin();
             if (screen == Screen.Intro)
             {
@@ -380,21 +377,22 @@ namespace MonoGameFinal___Fallout_Shootout
                 if (start == false)
                 {
                     _spriteBatch.Draw(vaultBoyTexture, new Rectangle(-150, 230, vaultBoyRect.Width - 500, vaultBoyRect.Height - 500), Color.White);
-                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(7, 8), Color.White);
+                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(window.Center.X / 4 - 15, 18), Color.White);
                     _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), textColor);
                 }
                 else
                 {
                     _spriteBatch.Draw(vaultBoyTexture, new Rectangle(-150, 230, vaultBoyRect.Width - 500, vaultBoyRect.Height - 500), Color.Transparent);
-                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(7, 8), Color.Transparent);
+                    _spriteBatch.DrawString(overseerFont, "Fallout Shootout", new Vector2(window.Center.X / 4 - 15, 18), Color.White);
                     _spriteBatch.DrawString(overseerFontUI, "press Enter to start", new Vector2(266, 447), Color.Transparent);
                 }
-                
+
             }
             else if (screen == Screen.Main)
             {
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
 
+                // Draw health and ammo bars
                 _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
                 _spriteBatch.Draw(rectangleTexture, rectangleHealthRect, Color.Green);
                 _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
@@ -402,18 +400,26 @@ namespace MonoGameFinal___Fallout_Shootout
 
                 _spriteBatch.DrawString(overseerFontUI, "Reloading", new Vector2(player._location.X, player._location.Top), textColor);
 
+                // Draw player, enemies, and bullets
                 player.Draw(_spriteBatch);
                 foreach (Enemy enemy in enemies)
                 {
-                    enemy.Draw(_spriteBatch); Rectangle healthBarRect = new Rectangle(enemy._location.X, enemy._location.Y - 10, enemy._location.X, 5);
+                    enemy.Draw(_spriteBatch);
+                    Rectangle healthBarRect = new Rectangle(enemy._location.Center.X - 20, enemy._location.Bottom - 82, enemy._location.Width / 5, 3);
                     float healthPercentage = (float)enemy.Health / enemy.MaxHealth; // Calculate percentage of health remaining
 
-                    // Draw health bar background (gray or red)
-                    _spriteBatch.Draw(rectangleTexture, healthBarRect, Color.Gray);
 
                     // Draw health bar foreground (green or red, indicating remaining health)
                     Rectangle healthBarFillRect = new Rectangle(healthBarRect.Left, healthBarRect.Bottom, (int)(healthBarRect.Width * healthPercentage), healthBarRect.Height);
-                    _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Green);
+                    if (healthPercentage <= 1 && healthPercentage > 0.5)
+                    {
+                        _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Green);
+                    }
+                    else if (healthPercentage <= 0.5)
+                    {
+                        _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Red);
+                    }
+                    
                 }
 
                 foreach (Bullet bullet in bullets)
@@ -423,11 +429,11 @@ namespace MonoGameFinal___Fallout_Shootout
             }
             else if (screen == Screen.Controls)
             {
-
+                // Draw controls screen elements
             }
             else if (screen == Screen.Gameover)
             {
-
+                // Draw game over screen elements
             }
 
             _spriteBatch.End();
