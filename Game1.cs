@@ -202,7 +202,6 @@ namespace MonoGameFinal___Fallout_Shootout
                     {
                         textColor = Color.Transparent;
                         bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
-                        gunShot1.Play();
                         rectangleAmmoRect.X -= 1;
                         secondsGun = 0;
                     }
