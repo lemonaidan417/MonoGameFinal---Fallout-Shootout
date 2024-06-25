@@ -145,6 +145,12 @@
 /processorParam:TextureFormat=Color
 /build:final-vaultentry.png
 
+#begin gunshot1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:gunshot1.wav
+
 #begin Overseer Italic.otf
 /copy:Overseer Italic.otf
 

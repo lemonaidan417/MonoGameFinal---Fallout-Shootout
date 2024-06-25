@@ -15,7 +15,7 @@ namespace MonoGameFinal___Fallout_Shootout
         public Enemy(Texture2D texture, int x, int y)
         {
             _texture = texture;
-            _location = new Rectangle(x, y, 200, 200);
+            _location = new Rectangle(x, y, 40, 50);
             _speed = new Vector2(1.2f, 1.2f);
             Health = 5;
             MaxHealth = 5;

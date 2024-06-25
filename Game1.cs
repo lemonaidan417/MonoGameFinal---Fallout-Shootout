@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -76,6 +77,8 @@ namespace MonoGameFinal___Fallout_Shootout
 
         float vaultDoorRotation;
 
+        SoundEffect gunShot1;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -136,6 +139,7 @@ namespace MonoGameFinal___Fallout_Shootout
             vaultDoorTexture = Content.Load<Texture2D>("Vault_65");
             vaultEntryTexture = Content.Load<Texture2D>("final-vaultentry");
             introBackgroundTexture = Content.Load<Texture2D>("final-desertlandscape");
+            gunShot1 = Content.Load<SoundEffect>("gunshot1");
         }
 
         protected override void Update(GameTime gameTime)
@@ -198,6 +202,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     {
                         textColor = Color.Transparent;
                         bullets.Add(new Bullet(bulletTexture, player._location.Center.ToVector2(), mouseState.Position.ToVector2(), 10));
+                        gunShot1.Play();
                         rectangleAmmoRect.X -= 1;
                         secondsGun = 0;
                     }
