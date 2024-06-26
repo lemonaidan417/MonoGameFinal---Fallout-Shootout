@@ -468,6 +468,8 @@ namespace MonoGameFinal___Fallout_Shootout
             base.Draw(gameTime);
 
             // Thank you so much for your help Mr Aldworth!
+
+            // And thank you for your encouragement and support, Alanna, Ethan, Geoffrey, and Merrick!
         }
     }
 }
