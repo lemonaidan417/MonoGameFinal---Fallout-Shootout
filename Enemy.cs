@@ -48,6 +48,24 @@ namespace MonoGameFinal___Fallout_Shootout
             {
                 _speed.Y = -1.2f;
             }
+
+            if (player._location.Top == _location.Bottom)
+            {
+                _speed.Y = 0;
+            }
+            else if (player._location.Bottom == _location.Top)
+            {
+                _speed.Y = 0;
+            }
+
+            if (player._location.Left == _location.Right)
+            {
+                _speed.X = 0;
+            }
+            else if (player._location.Right == _location.Left)
+            {
+                _speed.X = 0;
+            }
         }
 
         public bool IsAlive()

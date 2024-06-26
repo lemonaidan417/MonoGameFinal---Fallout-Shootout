@@ -11,6 +11,7 @@ namespace MonoGameFinal___Fallout_Shootout
         public Rectangle _location;
         public Vector2 _speed;
         public float _angle;
+        private float secondsDamageDelay;
         public int Health { get; set; }
         public int MaxHealth { get; set; }
 
@@ -20,13 +21,18 @@ namespace MonoGameFinal___Fallout_Shootout
             _location = new Rectangle(x, y, 100, 100);
             _speed = Vector2.Zero;
             _angle = 0f;
-            Health = 50;
-            MaxHealth = 50;
+            Health = 190;
+            MaxHealth = 190;
         }
 
         public void TakeDamage(int damage)
         {
-            Health -= damage;
+            if (secondsDamageDelay > 0.3)
+            {
+                Health -= damage;
+                secondsDamageDelay = 0;
+            }
+            
             if (Health < 0)
             {
                 Health = 0; // Ensure health doesn't go negative
@@ -76,6 +82,7 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             Move(window);
             _angle = (float)Math.Atan2(_speed.Y, _speed.X);
+            secondsDamageDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         public bool Collide(Rectangle item)

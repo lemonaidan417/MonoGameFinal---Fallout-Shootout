@@ -47,6 +47,8 @@ namespace MonoGameFinal___Fallout_Shootout
         Rectangle rectangleAmmoRect;
         Texture2D rectangleTexture;
 
+        Texture2D youDiedTexture;
+
         Texture2D bulletTexture;
 
         Texture2D eyeBotTexture;
@@ -58,6 +60,7 @@ namespace MonoGameFinal___Fallout_Shootout
         float secondsEnemy, spawnCoolDown;
         float secondsMoveDelay, moveCoolDown;
         float secondsTextFlash;
+
         float numRand;
 
         bool start;
@@ -65,6 +68,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
         SpriteFont overseerFont;
         SpriteFont overseerFontUI;
+        SpriteFont terminalFont;
 
         MouseState mouseState, prevMouseState;
         KeyboardState keyboardState, ks1, ks2;
@@ -130,6 +134,7 @@ namespace MonoGameFinal___Fallout_Shootout
             bulletTexture = Content.Load<Texture2D>("final-bullet");
             overseerFont = Content.Load<SpriteFont>("overseerFont");
             overseerFontUI = Content.Load<SpriteFont>("overseerFontUI");
+            terminalFont = Content.Load<SpriteFont>("terminalFont");
             backgroundTexture = Content.Load<Texture2D>("desert-background");
             eyeBotTexture = Content.Load<Texture2D>("eyebot-pixilart");
             rectangleTexture = Content.Load<Texture2D>("Rectangle");
@@ -137,6 +142,7 @@ namespace MonoGameFinal___Fallout_Shootout
             vaultDoorTexture = Content.Load<Texture2D>("Vault_65");
             vaultEntryTexture = Content.Load<Texture2D>("final-vaultentry");
             introBackgroundTexture = Content.Load<Texture2D>("final-desertlandscape");
+            youDiedTexture = Content.Load<Texture2D>("youdied");
         }
 
         protected override void Update(GameTime gameTime)
@@ -148,7 +154,7 @@ namespace MonoGameFinal___Fallout_Shootout
             {
                 mouseState = Mouse.GetState();
                 keyboardState = Keyboard.GetState();
-                Window.Title = mouseState.Position + "";
+                Window.Title = " ";
                 textColor = Color.White;
                 secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -187,7 +193,6 @@ namespace MonoGameFinal___Fallout_Shootout
                 secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                // Handle input for shooting and reloading
                 keyboardState = Keyboard.GetState();
                 ks1 = Keyboard.GetState();
 
@@ -294,6 +299,17 @@ namespace MonoGameFinal___Fallout_Shootout
                     }
                 }
 
+                foreach (Enemy enemy in enemies)
+                {
+                    if (enemy.Collide(player._location))
+                    {
+                        player.TakeDamage(12);
+                    }
+                }
+                if (!player.IsAlive())
+                {
+                    screen = Screen.Gameover;
+                }
                 // Remove enemies and bullets marked for removal
                 foreach (Enemy enemyToRemove in enemiesToRemove)
                 {
@@ -347,7 +363,7 @@ namespace MonoGameFinal___Fallout_Shootout
                     Exit();
                 }
 
-                Window.Title = mouseState.Position + "";
+                Window.Title = "Objective: Survive";
 
                 base.Update(gameTime);
             }
@@ -395,7 +411,7 @@ namespace MonoGameFinal___Fallout_Shootout
 
                 // Draw health and ammo bars
                 _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
-                _spriteBatch.Draw(rectangleTexture, rectangleHealthRect, Color.Green);
+                _spriteBatch.Draw(rectangleTexture, new Rectangle(rectangleHealthRect.X, rectangleHealthRect.Y, player.Health, rectangleHealthRect.Height), Color.Green);
                 _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
                 _spriteBatch.Draw(rectangleTexture, rectangleAmmoRect, Color.Goldenrod);
 
@@ -406,12 +422,12 @@ namespace MonoGameFinal___Fallout_Shootout
                 foreach (Enemy enemy in enemies)
                 {
                     enemy.Draw(_spriteBatch);
-                    Rectangle healthBarRect = new Rectangle(enemy._location.Center.X - 20, enemy._location.Bottom - 82, enemy._location.Width / 5, 3);
+                    Rectangle healthBarRect = new Rectangle(enemy._location.Center.X - 20, enemy._location.Bottom, enemy._location.Width, 4);
                     float healthPercentage = (float)enemy.Health / enemy.MaxHealth; // Calculate percentage of health remaining
 
 
                     // Draw health bar foreground (green or red, indicating remaining health)
-                    Rectangle healthBarFillRect = new Rectangle(healthBarRect.Left, healthBarRect.Bottom, (int)(healthBarRect.Width * healthPercentage), healthBarRect.Height);
+                    Rectangle healthBarFillRect = new Rectangle(healthBarRect.Left, healthBarRect.Bottom - 6, (int)(healthBarRect.Width * healthPercentage), healthBarRect.Height);
                     if (healthPercentage <= 1 && healthPercentage > 0.5)
                     {
                         _spriteBatch.Draw(rectangleTexture, healthBarFillRect, Color.Green);
@@ -427,6 +443,11 @@ namespace MonoGameFinal___Fallout_Shootout
                 {
                     bullet.Draw(_spriteBatch);
                 }
+                // Draw health and ammo bars
+                _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
+                _spriteBatch.Draw(rectangleTexture, new Rectangle(rectangleHealthRect.X, rectangleHealthRect.Y, player.Health, rectangleHealthRect.Height), Color.Green);
+                _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
+                _spriteBatch.Draw(rectangleTexture, rectangleAmmoRect, Color.Goldenrod);
             }
             else if (screen == Screen.Controls)
             {
@@ -435,7 +456,13 @@ namespace MonoGameFinal___Fallout_Shootout
             else if (screen == Screen.Gameover)
             {
                 // Draw game over screen elements
+                 
+                _spriteBatch.Draw(youDiedTexture, window, Color.White);
+                _spriteBatch.DrawString(terminalFont, "your bones are scraped clean by the desolate wind,\n       your vault will now surely die, as you have.", new Vector2(60, 450), Color.DarkRed);
+                _spriteBatch.DrawString(terminalFont, "press Escape and accept your fate", new Vector2(160, 525), Color.DarkRed);
+
             }
+
 
             _spriteBatch.End();
             base.Draw(gameTime);
