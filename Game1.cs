@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 
+// To skip into, press f and u :)
 namespace MonoGameFinal___Fallout_Shootout
 {
     enum Screen
@@ -175,6 +176,10 @@ namespace MonoGameFinal___Fallout_Shootout
                 {
                     start = true;
                     secondsTextFlash = 0;
+                }
+                if (keyboardState.IsKeyDown(Keys.F) && keyboardState.IsKeyDown(Keys.U))
+                {
+                    screen = Screen.Main;
                 }
                 if (start == true && vaultDoorRect.Left < window.Right)
                 {
@@ -363,13 +368,37 @@ namespace MonoGameFinal___Fallout_Shootout
                     Exit();
                 }
 
+                if (keyboardState.IsKeyDown(Keys.P))
+                {
+                    screen = Screen.Controls;
+                }
                 Window.Title = "Objective: Survive";
 
                 base.Update(gameTime);
             }
             else if (screen == Screen.Controls)
             {
+                textColor = Color.White;
+                secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+                if (secondsTextFlash >= 0 && secondsTextFlash < 1)
+                {
+                    textColor = Color.White;
+                }
+                else if (secondsTextFlash >= 1 && secondsTextFlash < 2)
+                {
+                    textColor = Color.Transparent;
+                }
+                else if (secondsTextFlash >= 2)
+                {
+                    secondsTextFlash = 0; // Reset the timer
+                }
+
+                keyboardState = Keyboard.GetState();
+                if (keyboardState.IsKeyDown(Keys.E))
+                {
+                    screen = Screen.Main;
+                }
             }
             else if (screen == Screen.Gameover)
             {
@@ -452,6 +481,9 @@ namespace MonoGameFinal___Fallout_Shootout
             else if (screen == Screen.Controls)
             {
                 // Draw controls screen elements
+                _spriteBatch.Draw(youDiedTexture, window, Color.Black);
+                _spriteBatch.DrawString(terminalFont, "Aim with cursor\nW - Up\nA - Left\nS - Down\nD - Right\nLeft Click - Shoot", new Vector2(0, 0), Color.White);
+                _spriteBatch.DrawString(terminalFont, "Press E to return", new Vector2(0, 170), textColor);
             }
             else if (screen == Screen.Gameover)
             {
