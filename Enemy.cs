@@ -12,13 +12,19 @@ namespace MonoGameFinal___Fallout_Shootout
         public int Health { get; set; }
         public int MaxHealth { get; set; }
 
+        private float _hoverOffset;
+        private float _hoverSpeed = 2.0f;  // Controls how fast the enemy hovers
+        private float _hoverHeight = 5.0f; // Controls how high the hover is
+        private float _time;               // Keeps track of time for sine wave
+
         public Enemy(Texture2D texture, int x, int y)
         {
             _texture = texture;
-            _location = new Rectangle(x, y, 40, 50);
+            _location = new Rectangle(x, y, 30, 60);
             _speed = new Vector2(1.2f, 1.2f);
-            Health = 5;
-            MaxHealth = 5;
+            Health = 4;
+            MaxHealth = 4;
+            _time = 0f;  // Initialize the time to 0
         }
 
         public void TakeDamage(int damage)
@@ -29,6 +35,7 @@ namespace MonoGameFinal___Fallout_Shootout
                 Health = 0; // Ensure health doesn't go negative
             }
         }
+
         public void Move(Player player)
         {
             if (player._location.Center.X > _location.Center.X)
@@ -49,20 +56,12 @@ namespace MonoGameFinal___Fallout_Shootout
                 _speed.Y = -1.2f;
             }
 
-            if (player._location.Top == _location.Bottom)
-            {
-                _speed.Y = 0;
-            }
-            else if (player._location.Bottom == _location.Top)
+            if (player._location.Top == _location.Bottom || player._location.Bottom == _location.Top)
             {
                 _speed.Y = 0;
             }
 
-            if (player._location.Left == _location.Right)
-            {
-                _speed.X = 0;
-            }
-            else if (player._location.Right == _location.Left)
+            if (player._location.Left == _location.Right || player._location.Right == _location.Left)
             {
                 _speed.X = 0;
             }
@@ -78,8 +77,17 @@ namespace MonoGameFinal___Fallout_Shootout
             return _location.Intersects(item);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
+            // Update the hover effect
+            _time += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _hoverOffset = (float)Math.Sin(_time * _hoverSpeed) * _hoverHeight;
+
+            // Apply the hover offset to the Y-axis
+            Vector2 position = new Vector2(_location.X, _location.Y + _hoverOffset);
+            _location = new Rectangle(position.ToPoint(), _location.Size);
+
+            // Move based on speed
             _location.Offset(_speed);
         }
 
