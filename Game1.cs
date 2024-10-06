@@ -150,27 +150,33 @@ namespace MonoGameFinal___Fallout_Shootout
         {
             var keyboardState = Keyboard.GetState();
 
-                if (keyboardState.IsKeyDown(Keys.Enter))
-                {
-                    start = true;
-                    secondsTextFlash = 0;
-                }
-                if (start == true && vaultDoorRect.Left < window.Right)
-                {
-                    vaultDoorRect.X += 1;
-                    vaultDoorRotation += 0.01f; // Rotate the Vault door while opening
-                }
-                else if (vaultDoorRect.X >= window.Right)
-                {
-                    screen = Screen.Main;
-                    textColor = Color.Transparent;
-                }
-            }
-            else if (screen == Screen.Main)
+            secondsTextFlash += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            textColor = secondsTextFlash % 2 < 1 ? Color.White : Color.Transparent;
+
+            if (keyboardState.IsKeyDown(Keys.Enter))
             {
-                secondsGun += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                start = true;
+            }
+            if (keyboardState.IsKeyDown(Keys.F) && keyboardState.IsKeyDown(Keys.U))
+            {
+                screen = Screen.Main;
+            }
+            if (start && vaultDoorRect.Left < window.Right)
+            {
+                vaultDoorRect.X += 1;
+                vaultDoorRotation += 0.01f;
+            }
+            else if (vaultDoorRect.X >= window.Right)
+            {
+                screen = Screen.Main;
+            }
+        }
+
+        private void HandleMainGame(GameTime gameTime, Player player)
+        {
+            secondsGun += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsEnemy += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            secondsMoveDelay += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             var keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
@@ -284,44 +290,33 @@ namespace MonoGameFinal___Fallout_Shootout
             }
         }
 
-                if (secondsMoveDelay >= moveCoolDown)
-                    secondsMoveDelay = 0;
-
-                // Handle player movement
-                player.HSpeed = 0;
-                player.VSpeed = 0;
-
-                if (keyboardState.IsKeyDown(Keys.D) || (keyboardState.IsKeyDown(Keys.Right)))
-                    player.HSpeed = 2;
-                else if (keyboardState.IsKeyDown(Keys.A) || (keyboardState.IsKeyDown(Keys.Left)))
-                    player.HSpeed = -2;
-
-                if (keyboardState.IsKeyDown(Keys.W) || (keyboardState.IsKeyDown(Keys.Up)))
-                    player.VSpeed = -2;
-                else if (keyboardState.IsKeyDown(Keys.S) || (keyboardState.IsKeyDown(Keys.Down)))
-                    player.VSpeed = 2;
-
-                if (keyboardState.IsKeyDown(Keys.LeftShift) || (keyboardState.IsKeyDown(Keys.RightShift)))
-                {
-                    player.VSpeed *= 1.8f;
-                    player.HSpeed *= 1.8f;
-                }
-                player.Update(gameTime, window);
-
-                rectangleHealthRect.X -= 0;
-
-                if (rectangleHealthRect.Right < 0)
-                {
-                    Exit();
-                }
-
-                Window.Title = "Objective: Survive";
-
-                base.Update(gameTime);
-            }
-            else if (screen == Screen.Controls)
+        private void HandleGameOverScreen()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
+                Exit();
+            }
+        }
 
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            _spriteBatch.Begin();
+
+            switch (screen)
+            {
+                case Screen.Intro:
+                    DrawIntroScreen();
+                    break;
+                case Screen.Main:
+                    DrawMainGame();
+                    break;
+                case Screen.Controls:
+                    DrawControlsScreen();
+                    break;
+                case Screen.Gameover:
+                    DrawGameOverScreen();
+                    break;
             }
 
             _spriteBatch.End();
@@ -352,37 +347,24 @@ namespace MonoGameFinal___Fallout_Shootout
                 _spriteBatch.Draw(rectangleTexture, healthBar, enemy.Health > enemy.MaxHealth / 2 ? Color.Green : Color.Red);
             }
 
-                foreach (Bullet bullet in bullets)
-                {
-                    bullet.Draw(_spriteBatch);
-                }
-                // Draw health and ammo bars
-                _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 5, 200, 50), Color.White);
-                _spriteBatch.Draw(rectangleTexture, new Rectangle(rectangleHealthRect.X, rectangleHealthRect.Y, player.Health, rectangleHealthRect.Height), Color.Green);
-                _spriteBatch.Draw(rectangleTexture, new Rectangle(0, 35, 200, 50), Color.White);
-                _spriteBatch.Draw(rectangleTexture, rectangleAmmoRect, Color.Goldenrod);
-            }
-            else if (screen == Screen.Controls)
+            foreach (Bullet bullet in bullets)
             {
-                // Draw controls screen elements
+                bullet.Draw(_spriteBatch);
             }
-            else if (screen == Screen.Gameover)
-            {
-                // Draw game over screen elements
-                 
-                _spriteBatch.Draw(youDiedTexture, window, Color.White);
-                _spriteBatch.DrawString(terminalFont, "your bones are scraped clean by the desolate wind,\n       your vault will now surely die, as you have.", new Vector2(60, 450), Color.DarkRed);
-                _spriteBatch.DrawString(terminalFont, "press Escape and accept your fate", new Vector2(160, 525), Color.DarkRed);
+        }
 
-            }
+        private void DrawControlsScreen()
+        {
+            _spriteBatch.Draw(youDiedTexture, window, Color.Black);
+            _spriteBatch.DrawString(terminalFont, "W - Up\nA - Left\nS - Down\nD - Right\nLeft Click - Shoot", new Vector2(0, 0), Color.White);
+            _spriteBatch.DrawString(terminalFont, "Press E to return", new Vector2(0, 170), textColor);
+        }
 
-
-            _spriteBatch.End();
-            base.Draw(gameTime);
-
-            // Thank you so much for your help Mr Aldworth!
-
-            // And thank you for your encouragement and support, Alanna, Ethan, Geoffrey, and Merrick!
+        private void DrawGameOverScreen()
+        {
+            _spriteBatch.Draw(youDiedTexture, window, Color.White);
+            _spriteBatch.DrawString(terminalFont, "your bones are scraped clean by the desolate wind,\n       your vault will now surely die, as you have.", new Vector2(60, 450), Color.DarkRed);
+            _spriteBatch.DrawString(terminalFont, "press Escape and accept your fate", new Vector2(160, 525), Color.DarkRed);
         }
     }
 }
